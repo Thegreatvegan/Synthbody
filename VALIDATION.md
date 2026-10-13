@@ -223,13 +223,155 @@ the report says so for three reasons:
    publication that SYNTHBODY opened**.
 
 One scalar agreement, from inferred inputs, against a recalled literature
-value, is the full extent of external validation for this module.
+value, **was** the full extent of external validation for this module. Section
+5a records the concentration-time test that has since replaced it.
 
 ### What the PBPK model's output must not be used for
 
 Tissue concentrations are model output, not exposure predictions. In particular
 **brain concentrations will be overestimated** for any compound actively
 excluded from the CNS, because no blood-brain barrier is modelled.
+
+---
+
+## 5a. Oral PBPK - concentration-time validation
+
+**Model** `pbpk_oral_acat` - **Status** `research_only` - Runs live at
+`GET /api/validation/pbpk/oral-concentration-time`, and in the Evidence
+workspace under **Oral PBPK validation**.
+
+Section 5 recorded that the PBPK module had never been compared against an
+observed concentration-time profile. This is that comparison. It became
+possible only once the seven-compartment absorption model existed, because a
+whole-body distribution model cannot predict an *oral* profile without a
+mechanistic account of how the drug gets in.
+
+### What was predicted a priori and what was calibrated
+
+This distinction is the whole result. A validation that quietly fits the thing
+it is measuring says nothing.
+
+| Process | Status | How |
+| --- | --- | --- |
+| **Distribution** | predicted a priori | All twelve tissue:plasma partition coefficients, and therefore the volume of distribution, from Poulin-Theil on log P, fu and B:P. **Never fitted.** |
+| **Absorption** | predicted a priori | Gastric emptying, transit, dissolution and permeability-limited uptake from shipped GI physiology at the **pre-specified** Peff of 3.0e-4 cm/s. There is no ka to estimate. |
+| **Elimination** | calibrated out-of-sample | One number - CL/kg from the **calibration** subjects - inverted through the well-stirred model to a hepatic CLint. Evaluated on different subjects. |
+
+Two of the three processes that shape an oral profile are predicted from
+physicochemistry; one is calibrated on subjects disjoint from those evaluated.
+The protocol is the same deterministic odd/even split used everywhere else in
+SYNTHBODY, fixed in code so it cannot be chosen after seeing results.
+
+Calibration subjects 1, 3, 5, 7, 9, 11 - held out 2, 4, 6, 8, 10, 12 -
+calibrated CL = 0.037907 L/h/kg.
+
+### Agreement, 66 held-out observed concentrations
+
+| Metric | Value |
+| --- | --- |
+| AAFE | **1.185** |
+| AFE | 0.984 (very slight under-prediction) |
+| Within 2-fold | **96.7%** (64/66) |
+| Within 1.5-fold | 95.0% |
+| Median absolute error | **14.4%** |
+| RMSE | 1.004 mg/L |
+| R-squared vs line of identity | 0.877 |
+| Lin's concordance | 0.930 |
+
+| Exposure metric | AAFE | AFE | Within 2-fold |
+| --- | --- | --- | --- |
+| AUC | 1.134 | 1.061 | 100% |
+| Cmax | 1.099 | 0.918 | 100% |
+| tmax | 1.521 | 1.115 | 83% |
+
+### The volume of distribution was never fitted
+
+| | Value |
+| --- | --- |
+| Predicted from physicochemistry (Poulin-Theil) | **0.479 L/kg** |
+| Fitted by the empirical model from calibration data | 0.459 L/kg |
+| **Fold difference** | **1.04** |
+
+This is a materially stronger claim than section 5's scalar check. There, a
+predicted Vss was compared against a recalled literature value. Here the same
+predicted Vss is load-bearing inside a dynamic model whose output is compared
+point by point against observed concentrations - so an error in it would show
+up as a systematic distortion of the curve, not merely as a number that happens
+to look right.
+
+### Compared with the empirical one-compartment model
+
+| | Empirical 1-cmt | Oral PBPK |
+| --- | --- | --- |
+| Parameters estimated from this drug | **3** (CL, V, ka) | **1** (CL) |
+| Volume of distribution | fitted | predicted |
+| Absorption rate | fitted | predicted |
+| Held-out AAFE | 1.293 | **1.185** |
+| Held-out within 2-fold | 90% | **96.7%** |
+
+The PBPK model is more accurate on held-out data while estimating two fewer
+parameters from it. **This is not a like-for-like contest** and the software
+says so wherever it reports the comparison: the two models were given different
+amounts of information about theophylline. Equal accuracy at fewer degrees of
+freedom would already have been the meaningful result. Lower error is a stronger
+one, but what matters is the degrees of freedom, not the decimal.
+
+### Honest reading
+
+**What this establishes.** For a freely soluble, highly permeable, neutral,
+low-extraction, minimally bound drug, SYNTHBODY can predict an observed human
+oral plasma profile from physicochemistry plus one calibrated clearance, to
+within about 15% median error. The mechanistic chain - dissolution, transit,
+permeability, portal absorption, first pass, tissue partitioning, well-stirred
+clearance - composes without an empirical correction factor anywhere in it.
+
+**What it does not establish.**
+
+1. **One drug, one study, one population.** Twelve healthy adults, single oral
+   dose. Theophylline is close to the easiest case a PBPK model can be given.
+   Nothing here transfers to poorly soluble, highly bound, high-extraction or
+   basic drugs - and Poulin-Theil is specifically known to predict badly for
+   moderate-to-strong bases.
+2. **AUC is the weak metric.** Clearance was calibrated, and AUC is
+   approximately dose x F / CL. Judge this on curve shape, Cmax and tmax.
+3. **Out-of-sample across subjects is not out-of-sample across studies.** The
+   six held-out subjects came from the same study, protocol and laboratory as
+   the six used for calibration.
+4. **Every tissue concentration remains unvalidated.** This tests the plasma
+   prediction only. No observed human tissue concentration data ships with
+   SYNTHBODY. Plasma agreement does not establish that any individual organ
+   compartment is right, and the model's tissue outputs are labelled
+   UNVALIDATED in the UI for that reason.
+
+### The weakness the test exposed
+
+tmax is the worst metric (AAFE 1.521, only 83% within 2-fold), and the
+per-subject numbers show exactly why:
+
+| Subject | Observed tmax | Predicted tmax |
+| --- | --- | --- |
+| 2 | 1.92 h | 2.18 h |
+| 4 | 1.07 h | 2.21 h |
+| 6 | 1.15 h | 2.19 h |
+| 8 | 2.02 h | 2.21 h |
+| 10 | 3.55 h | 2.22 h |
+| 12 | 3.52 h | 2.21 h |
+
+Observed tmax spans 1.07-3.55 h. Predicted tmax spans 2.18-2.22 h. The model
+gives every subject essentially the same absorption profile, because gastric
+emptying is a fixed population constant with no between-subject variability.
+The prediction sits near the middle of the observed spread - which is why AFE
+is a respectable 1.115 while AAFE is poor - but it cannot reproduce the spread
+itself. Fixing this needs a distribution on gastric emptying rate, tracked in
+PROGRESS.md as a prerequisite for the population absorption work.
+
+### Reproducing it
+
+Every figure above is pinned by `tests/test_oral_pbpk.py`, which compares
+against `tests/baseline/oral_pbpk_validation.json` - a fixture generated by
+running the protocol, never typed by hand. To regenerate the numbers directly,
+call `run_oral_pbpk_validation()` from
+`synthbody.engine.analysis.pbpk_validation`, or hit the API endpoint above.
 
 ---
 

@@ -869,3 +869,58 @@ export interface GIPhysiology {
   colon: Record<string, number>;
   raw_entries: Record<string, unknown>;
 }
+
+// ---------------------------------------------------------------------------
+// Oral PBPK concentration-time validation
+//
+// The first test of the PBPK module against observed human plasma data, as
+// opposed to the single-scalar Vss structural check. Shapes mirror
+// `synthbody.engine.analysis.pbpk_validation`.
+// ---------------------------------------------------------------------------
+export interface PbpkSubjectPrediction {
+  subject_id: string;
+  weight_kg: number;
+  dose_mg: number;
+  time_h: number[];
+  observed_mg_per_L: number[];
+  predicted_mg_per_L: number[];
+  predicted_fabs: number;
+  predicted_f_hepatic: number;
+  hepatic_clint_L_per_h: number;
+  predicted_vss_L_per_kg: number;
+  observed_cmax: number;
+  predicted_cmax: number;
+  observed_tmax_h: number;
+  predicted_tmax_h: number;
+  observed_auc: number;
+  predicted_auc: number;
+  mass_balance_relative_error: number;
+}
+
+export interface PbpkFoldSummary {
+  aafe: number;
+  afe: number;
+  fraction_within_2_fold: number;
+  n: number;
+}
+
+export interface PbpkOralValidation {
+  model_id: string;
+  protocol: string;
+  inputs: {
+    physchem: Record<string, { value: number; origin: ParameterOrigin; source: string }>;
+    peff_cm_per_s: number;
+    particle_radius_um: number;
+    renal_fraction_of_clearance: number;
+    prespecified: boolean;
+  };
+  calibration_subject_ids: string[];
+  held_out_subject_ids: string[];
+  calibrated_clearance_L_per_h_per_kg: number;
+  predictions: PbpkSubjectPrediction[];
+  pointwise_metrics: Record<string, number>;
+  metric_summary: Record<string, PbpkFoldSummary>;
+  comparison_to_empirical_model: Record<string, unknown>;
+  interpretation: string;
+  caveats: string[];
+}

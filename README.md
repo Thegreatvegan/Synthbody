@@ -52,7 +52,7 @@ Open <http://localhost:5180>.
 
 ```bash
 cd backend
-python -m pytest tests/ -q          # 234 tests
+python -m pytest tests/ -q          # 286 tests
 python scripts/run_validation.py    # reproduces every number in VALIDATION.md
 python scripts/run_benchmark.py     # reproduces every number in BENCHMARK.md
 ```
@@ -79,7 +79,7 @@ UI on <http://localhost:5180>, API on <http://localhost:8011>.
 | **Systems** | The compartments and transport paths of the **active model** — and an explicit list of everything that is *not* modelled. |
 | **Analytics** | Monte Carlo population variability with percentile envelopes and exposure distributions; local, Morris and Sobol sensitivity analysis. |
 | **Experiments** | Stored runs grouped into experiments, with a reproduce button that re-executes a saved run and compares the input hash, engine revision and curve point by point. |
-| **Evidence** | Searchable reference library (32 entries, every PMID verified against PubMed), live validation results, the competitive benchmark, the shipped observed datasets, and the feasibility assessment. |
+| **Evidence** | Searchable reference library (32 entries, every PMID verified against PubMed), live validation results, the oral PBPK concentration-time validation, the competitive benchmark, the shipped observed datasets, and the feasibility assessment. |
 | **Reports** | Generates a complete methods-and-results document: inputs, parameter provenance, exposure metrics, solver diagnostics, independent validation, limitations, references. |
 
 ### Models
@@ -89,9 +89,10 @@ UI on <http://localhost:5180>, API on <http://localhost:8011>.
 | One-compartment, first-order absorption | `independently_validated` | Held-out Theoph subjects: AAFE **1.29**, **90%** within 2-fold, median absolute error **19%** |
 | Two-compartment | `independently_validated` | Held-out Indometh subjects: AAFE **1.34**, **94%** within 2-fold |
 | One-compartment Michaelis–Menten | `structurally_verified` | Numerics verified; no observed non-linear PK dataset ships |
-| Whole-body perfusion-limited PBPK (12 tissues) | `research_only` | Mass and flow balance close; predicted theophylline Vss within **1.04-fold** of the reported 0.5 L/kg. No concentration-time validation. |
+| Whole-body perfusion-limited PBPK (12 tissues), IV | `research_only` | Mass and flow balance close; predicted theophylline Vss within **1.04-fold** of the reported 0.5 L/kg. Its distribution equations are exercised by the oral PBPK test below, but its own first-order oral depot route has no concentration-time validation. |
+| **Whole-body oral PBPK (7-cmt ACAT + 12 tissues)** | `research_only` | **First concentration-time test of the PBPK module.** Held-out Theoph subjects: AAFE **1.19**, **97%** of 66 points within 2-fold, Cmax AAFE **1.10**, tmax AAFE **1.52**. Volume of distribution predicted, never fitted (0.479 vs 0.459 L/kg fitted, 1.04-fold). Plasma only; tissue concentrations remain unvalidated. |
 | Sigmoid Emax, indirect response (×4), effect compartment | `research_only` | Structurally verified; all shipped PD parameters are **illustrative** |
-| Compartmental GI absorption and transit (7-compartment CAT/ACAT) | `research_only` | Predicts fabs from physicochemistry. A-priori test on held-out Theoph: Cmax AAFE **1.08**, AUC AAFE **1.14**. Not validated for poorly soluble drugs. |
+| Compartmental GI absorption and transit (7-compartment CAT/ACAT) | `research_only` | Predicts fabs from physicochemistry. A-priori test on held-out Theoph: Cmax AAFE **1.08**, AUC AAFE **1.14**. Not validated for poorly soluble drugs. Single dosing only. |
 
 Full numbers, including everything that went wrong: **[VALIDATION.md](VALIDATION.md)**
 
@@ -192,7 +193,7 @@ synthbody/
 │   │   ├── schemas/             Pydantic API contracts
 │   │   └── data/library/        drugs, references, reference physiology (JSON)
 │   ├── scripts/run_validation.py
-│   └── tests/                   199 tests
+│   └── tests/                   286 tests
 └── frontend/
     └── src/
         ├── components/          UI primitives + the SVG plotting engine
@@ -212,6 +213,7 @@ test suite exercise the numerics without a web server. Details:
 | --- | --- |
 | **[VALIDATION.md](VALIDATION.md)** | Every achieved accuracy figure, the fixed protocol, and every known problem the pipeline surfaced |
 | **[BENCHMARK.md](BENCHMARK.md)** | Competitive benchmark: the a-priori absorption test that ran, and the head-to-head vs Simcyp/GastroPlus/GI-Sim that was **refused** for lack of obtainable data |
+| **[PROGRESS.md](PROGRESS.md)** | Capability expansion status: what is built and tested, and what each remaining module needs before it can be built honestly |
 | **[SCIENTIFIC_LIMITATIONS.md](SCIENTIFIC_LIMITATIONS.md)** | What this software cannot tell you, and what would be needed to change that |
 | **[FEASIBILITY_MATRIX.md](FEASIBILITY_MATRIX.md)** | All 71 white-paper components mapped to implemented / simplified / not implemented / excluded |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Design decisions, module boundaries, API surface |
@@ -227,9 +229,17 @@ theophylline and single-dose IV indomethacin, in healthy adults, within the
 designs of those two datasets.
 
 **What works but is unvalidated:** multiple dosing, intravenous theophylline,
-covariate adjustment magnitudes, the PBPK model's concentration-time output,
-and all pharmacodynamics. The software permits these simulations; the validation
-status does not travel with you.
+covariate adjustment magnitudes, every PBPK *tissue* concentration, and all
+pharmacodynamics. The software permits these simulations; the validation status
+does not travel with you.
+
+**Newly tested:** the whole-body oral PBPK model predicts held-out observed
+plasma profiles with AAFE 1.19, with the volume of distribution and the entire
+absorption profile derived from physicochemistry rather than fitted — a lower
+error than the empirical one-compartment model achieved while fitting three
+parameters. That is still one drug, one study, plasma only, and theophylline is
+close to the easiest case a PBPK model can be given. Read
+[VALIDATION.md](VALIDATION.md) before quoting it.
 
 **What is deliberately absent:** quantum simulation, dosing recommendations,
 disease progression, immune/endocrine/neurotransmitter/metabolic networks,

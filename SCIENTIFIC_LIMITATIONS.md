@@ -144,16 +144,57 @@ extrapolation:
 
 ## 4. The PBPK model — `research_only`
 
-This model has **not been compared against any observed concentration-time
-profile.** Its only external check is one scalar: predicted steady-state volume
-of distribution for theophylline, which comes out at 0.4797 L/kg against a
-reported ~0.5 L/kg (1.04-fold). And even that check rests on:
+**This section was rewritten when the concentration-time test below was added.
+The earlier text said the PBPK module had never been compared against an
+observed profile. That is no longer true, and the limitations that remain are
+different ones.**
+
+### What has now been tested
+
+The whole-body **oral** PBPK model (`pbpk_oral_acat`) predicts held-out
+observed theophylline plasma profiles with AAFE 1.185 and 96.7% of 66 points
+within 2-fold, with the volume of distribution and the entire absorption
+profile predicted from physicochemistry rather than fitted. Full protocol and
+caveats in [VALIDATION.md](VALIDATION.md) §5a.
+
+### What that does and does not license
+
+It licenses one sentence: for a freely soluble, highly permeable, neutral,
+low-extraction, minimally bound drug, this model can predict an observed human
+oral *plasma* profile to within roughly 15% median error.
+
+It does not license anything else, and specifically:
+
+- **One drug.** Theophylline is close to the easiest case a PBPK model can be
+  given. Nothing here transfers to poorly soluble, highly bound,
+  high-extraction or basic compounds.
+- **Plasma only.** The model emits twelve tissue concentrations; exactly one
+  observable was tested. **Every tissue concentration remains entirely
+  unvalidated** and is labelled as such in the UI. Plasma agreement does not
+  establish that any individual organ compartment is correct.
+- **Same study.** The held-out subjects shared a protocol, laboratory and
+  population with the calibration subjects.
+- **The intravenous model was not tested.** `pbpk_perfusion_limited` shares the
+  distribution equations that were exercised, but its own first-order oral
+  depot route has no concentration-time validation of its own.
+
+The validation status was deliberately **not** upgraded on the strength of one
+drug. See [PROGRESS.md](PROGRESS.md) for what would justify that.
+
+### The inputs are still weak
+
+The test above inherits the same input provenance as the original scalar check:
 
 - a log P that is PubChem's **XLogP3**, a *computed* descriptor, not a measurement;
 - a fraction unbound that is **inferred** from "approximately 40% protein bound";
-- a blood:plasma ratio that is an **illustrative** default with no retrieved source;
-- a comparison value (0.5 L/kg) that was **not extracted from a primary
-  publication SYNTHBODY opened**.
+- a blood:plasma ratio whose primary source was **not retrieved**;
+- all systemic clearance assigned to the hepatic route, because a primary
+  source for theophylline's renal fraction was not retrieved. The effect of
+  that choice is small enough to be checked rather than assumed, and
+  `test_renal_fraction_barely_moves_the_result` checks it.
+
+A good prediction from weakly sourced inputs is still a good prediction, but it
+is not evidence that the inputs are right.
 
 ### Structural limitations
 

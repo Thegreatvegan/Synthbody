@@ -471,3 +471,141 @@ def test_renal_fraction_barely_moves_the_result():
     a = all_hepatic.pointwise_metrics["aafe"]
     b = with_renal.pointwise_metrics["aafe"]
     assert abs(a - b) < 0.01, f"renal split moved AAFE from {a} to {b}"
+
+
+# ------------------------------------------------------------- registry/API
+def test_both_absorption_models_are_registered():
+    """Regression for an audit finding.
+
+    The seven-compartment absorption model shipped working, tested and
+    benchmarked -- but was never added to ``model_specs()``, so the Studio
+    workspace could not select it and it was reachable only through the
+    benchmark endpoints. Capability that the UI cannot reach is not capability.
+    """
+    from synthbody.engine.registry import model_specs
+
+    specs = model_specs()
+    assert "gi_absorption_cat" in specs
+    assert "pbpk_oral_acat" in specs
+
+
+def test_registered_specs_agree_with_the_model_classes():
+    """The registry must not advertise a status the model does not claim."""
+    from synthbody.engine.registry import get_model_spec
+
+    spec = get_model_spec("pbpk_oral_acat")
+    model = _model()
+    assert spec.validation_status == model.validation_status
+    assert spec.validation_summary == model.validation_summary
+    assert spec.name == model.model_name
+
+
+def test_absorption_models_decline_multiple_dosing():
+    from synthbody.engine.registry import get_model_spec
+
+    for model_id in ("gi_absorption_cat", "pbpk_oral_acat"):
+        spec = get_model_spec(model_id)
+        assert spec.supports_multiple_dosing is False, model_id
+        assert spec.requires_dose_notification is True, model_id
+
+
+def test_registry_builders_produce_runnable_models():
+    from synthbody.engine.registry import build_model
+
+    for model_id in ("gi_absorption_cat", "pbpk_oral_acat"):
+        model = build_model(model_id, {})
+        assert hasattr(model, "set_dose"), model_id
+        y0 = model.initial_state_for_dose(100.0)
+        result = simulate(
+            model, t_end_h=12.0, output_times_h=np.linspace(0, 12, 121),
+            initial_state=y0, check_tolerance_refinement=False,
+        )
+        assert result.diagnostics.success, model_id
+
+
+def test_existing_models_keep_multiple_dosing():
+    """The new restriction must not have leaked onto the old models."""
+    from synthbody.engine.registry import get_model_spec
+
+    for model_id in ("pk_1cmt_foa", "pk_2cmt", "pk_1cmt_mm", "pbpk_perfusion_limited"):
+        spec = get_model_spec(model_id)
+        assert spec.supports_multiple_dosing is True, model_id
+        assert spec.requires_dose_notification is False, model_id
+
+
+def _client():
+    from fastapi.testclient import TestClient
+
+    from synthbody.api.main import app
+
+    return TestClient(app)
+
+
+def test_api_runs_the_oral_pbpk_model():
+    response = _client().post(
+        "/api/simulate",
+        json={
+            "model_id": "pbpk_oral_acat",
+            "parameters": {"S0": 7.36, "Peff": 3.0e-4, "pKa_acidic": 8.81, "CLint_H": 4.5},
+            "regimen": {"route": "oral", "dose_mg": 320.0, "n_doses": 1, "interval_h": 24.0},
+            "simulation_horizon_h": 25.0,
+            "n_output_points": 241,
+        },
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    # The dose notification must have reached the model, or fraction absorbed
+    # would come back as a column of zeros.
+    assert body["observables"]["fraction_absorbed"][-1] > 0.9
+    assert max(body["observables"]["plasma_concentration"]) > 1.0
+    assert body["validation_status"] == "research_only"
+
+
+def test_api_runs_the_standalone_absorption_model():
+    response = _client().post(
+        "/api/simulate",
+        json={
+            "model_id": "gi_absorption_cat",
+            "parameters": {"S0": 7.36, "Peff": 3.0e-4, "pKa_acidic": 8.81},
+            "regimen": {"route": "oral", "dose_mg": 320.0, "n_doses": 1, "interval_h": 24.0},
+            "simulation_horizon_h": 25.0,
+            "n_output_points": 241,
+        },
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["observables"]["fraction_absorbed"][-1] > 0.9
+
+
+def test_api_refuses_multiple_dosing_with_an_explanation():
+    """Refusal must carry a reason the user can act on, not a bare 400."""
+    response = _client().post(
+        "/api/simulate",
+        json={
+            "model_id": "pbpk_oral_acat",
+            "parameters": {},
+            "regimen": {"route": "oral", "dose_mg": 320.0, "n_doses": 3, "interval_h": 12.0},
+            "simulation_horizon_h": 48.0,
+            "n_output_points": 241,
+        },
+    )
+    assert response.status_code == 400
+    detail = response.json()["detail"].lower()
+    assert "single dosing only" in detail
+    assert "particle" in detail
+
+
+def test_api_exposes_the_oral_pbpk_validation():
+    response = _client().get("/api/validation/pbpk/oral-concentration-time")
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["model_id"] == "pbpk_oral_acat"
+    assert body["pointwise_metrics"]["n_observations"] == 66.0
+    assert not set(body["calibration_subject_ids"]) & set(body["held_out_subject_ids"])
+    assert body["caveats"]
+
+
+def test_api_still_serves_the_original_pbpk_structural_check():
+    """The pre-existing endpoint must not have been shadowed by the new route."""
+    response = _client().get("/api/validation/pbpk/structural-check")
+    assert response.status_code == 200, response.text
+    assert "predicted_vss_L" in response.json()

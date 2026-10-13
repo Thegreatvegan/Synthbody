@@ -471,6 +471,24 @@ def validation_report(target_id: str) -> dict[str, Any]:
         raise HTTPException(404, str(exc)) from exc
 
 
+@router.get("/validation/pbpk/oral-concentration-time")
+def pbpk_oral_concentration_time_validation() -> dict[str, Any]:
+    """Concentration-time validation of the whole-body oral PBPK model.
+
+    The check the PBPK module lacked until now: the structural check below
+    compares a single predicted scalar against a literature value, which is not
+    enough to say a distribution model predicts exposure.
+
+    Runs live rather than returning a stored claim, so the numbers in the UI are
+    always the numbers the current code produces. Distribution and absorption
+    are predicted from physicochemistry; only clearance is calibrated, on
+    subjects disjoint from those evaluated.
+    """
+    from synthbody.engine.analysis.pbpk_validation import run_oral_pbpk_validation
+
+    return run_oral_pbpk_validation().to_dict()
+
+
 @router.get("/validation/pbpk/structural-check")
 def pbpk_structural_check() -> dict[str, Any]:
     """The one quantitative external check the PBPK distribution module passes.

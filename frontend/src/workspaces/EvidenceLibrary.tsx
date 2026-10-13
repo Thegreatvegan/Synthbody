@@ -37,6 +37,7 @@ import { api } from "../lib/api";
 import { downloadText, pct, pctRaw, prettyUnit, seriesColour, sig, slug, toCsv } from "../lib/format";
 import { useStore } from "../lib/store";
 import { BenchmarkTab } from "./BenchmarkTab";
+import { OralPbpkValidationTab } from "./OralPbpkValidationTab";
 import type {
   DatasetSummary,
   PbpkStructuralCheck,
@@ -47,7 +48,7 @@ import type {
 
 export function EvidenceLibrary() {
   const [tab, setTab] = useState<
-    "validation" | "benchmark" | "references" | "datasets" | "feasibility"
+    "validation" | "pbpk" | "benchmark" | "references" | "datasets" | "feasibility"
   >("validation");
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -56,6 +57,12 @@ export function EvidenceLibrary() {
         onChange={setTab}
         tabs={[
           { id: "validation", label: "Model validation" },
+          {
+            id: "pbpk",
+            label: "Oral PBPK validation",
+            title:
+              "Concentration-time validation of the whole-body PBPK model against observed human plasma data",
+          },
           {
             id: "benchmark",
             label: "Competitive benchmark",
@@ -68,6 +75,7 @@ export function EvidenceLibrary() {
       />
       <div className="flex min-h-0 flex-1">
         {tab === "validation" && <ValidationTab />}
+        {tab === "pbpk" && <OralPbpkValidationTab />}
         {tab === "benchmark" && <BenchmarkTab />}
         {tab === "references" && <ReferencesTab />}
         {tab === "datasets" && <DatasetsTab />}

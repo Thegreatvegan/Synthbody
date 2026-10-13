@@ -16,6 +16,7 @@ import type {
   Patient,
   PatientInput,
   PatientPreview,
+  PbpkOralValidation,
   PbpkStructuralCheck,
   PhysiologyResponse,
   PopulationRequest,
@@ -187,6 +188,8 @@ export const api = {
   validationTargets: () => get<ValidationTargets>("/validation/targets"),
   validation: (targetId: string) => get<ValidationReport>(`/validation/${targetId}`),
   pbpkCheck: () => get<PbpkStructuralCheck>("/validation/pbpk/structural-check"),
+  pbpkOralValidation: () =>
+    get<PbpkOralValidation>("/validation/pbpk/oral-concentration-time"),
 
   // ---- benchmarks
   benchmarkTheophylline: () =>
