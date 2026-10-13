@@ -334,9 +334,34 @@ retrievable physicochemistry, would simultaneously:
   paywall denied it;
 - strengthen every validation claim in the repository at once.
 
-Worth searching: Rdatasets and the R `nlme`/`PKPDdatasets` ecosystem (already a
-proven source for Theoph and Indometh), and PMC open-access articles with
-digitisable or tabulated profiles.
+### Candidate datasets — search performed, results below
+
+The Rdatasets index (3,648 entries) was searched and three candidates were
+confirmed **fetchable** under the same GPL-2 | GPL-3 licence as the two
+datasets already shipped. Each has a specific, named gap. None has been
+ingested, because each gap has to be closed first.
+
+| Dataset | Design | Why it is valuable | Gap that blocks it |
+| --- | --- | --- | --- |
+| **`nlme::Quinidine`** 1,471 rows, 136 subjects | Multiple oral/IV doses, sparse clinical sampling. Columns: time, conc, dose, interval, Age, Height, Weight, Race, Smoke, Ethanol, Heart, Creatinine, **glyco** | **The single most valuable dataset found.** Quinidine is a **base** and is highly bound to alpha-1-acid glycoprotein — exactly the case Poulin–Theil is documented to predict badly, which is the untested weakness of the current distribution model. It also carries the covariate set P4 needs *and* a measured binding-protein concentration, which almost no public dataset has. | Sparse, unbalanced, multiple-dose population design with many blank `conc` rows (dosing records). It cannot be used with the current individual-profile protocol — it needs NLME (**P6**). This dataset is the reason to build P6 rather than an afterthought to it. |
+| **`nlme::Cefamandole`** 84 rows, 6 subjects | IV, densely sampled (10 min onward) | Acidic, renally eliminated, low volume of distribution — a genuinely different physicochemical class from theophylline. Being **IV**, it would test the distribution model *without* absorption confounding, which is precisely the gap recorded in P1 ("the intravenous model was not tested"). | **The dataset carries no dose and no body weight** — only Subject, Time, conc. Clearance and volume cannot be scaled without them. The dose is documented in the `nlme` package help rather than the data file; it must be **retrieved and cited, not assumed**. Nothing should be built until it is. |
+| **`nlme::Tetracycline1/2`** 40 rows, 5 subjects, 2 formulations | Oral, two formulations | Tetracycline is amphoteric, chelates metals, and is incompletely absorbed — a much harder absorption case than theophylline, and the formulation arm is directly relevant to **P3**. | No dose column, and only five subjects, so a calibrate/hold-out split leaves two or three subjects per side. Underpowered for a validation claim even once the dose is sourced. |
+
+Also noted but rejected: `nlme::Phenobarb` (neonatal — needs the paediatric
+physiology that P4 has not built) and `nlme::Remifentanil` (cleared by blood
+esterases, so the well-stirred *hepatic* model does not apply and a fair test
+would need a different elimination structure).
+
+**Recommended next step, concretely:** retrieve and cite the Cefamandole dose
+and body weights from the `nlme` documentation or its cited source (Davidian &
+Giltinan). That is a bounded search task, and if it succeeds it unlocks an IV
+PBPK validation on an acidic, renally-cleared drug — closing two documented
+gaps at once for very little new code, since the IV path through
+`PerfusionLimitedPBPK` already exists and the validation harness in
+`engine/analysis/pbpk_validation.py` generalises to it.
+
+Still unsearched: PMC open-access articles with tabulated profiles, and the
+`PKPDdatasets` ecosystem.
 
 ---
 
@@ -364,9 +389,10 @@ explicit absence of any HIPAA or GDPR claim must survive this work intact.
 
 Ranked by value delivered per unit of risk, not by module number:
 
-1. **P9 — find a second drug with open observed data.** Unblocks the P1 status
-   upgrade and strengthens everything else. Pure search effort, no
-   fabrication risk.
+1. **P9 — source the Cefamandole dose and weights.** The dataset search is
+   already done (see P9 for the shortlist and each candidate's specific gap);
+   what remains is one bounded retrieval. Success unlocks an IV PBPK validation
+   on an acidic, renally-cleared drug and closes two documented gaps at once.
 2. **P4 — check whether httk carries paediatric/geriatric physiology.** It is
    already a dependency and already parsed programmatically; this may be a
    cheap, fully cited win.
