@@ -1,0 +1,77 @@
+{
+  "_status": "EMPTY — AWAITING DATA",
+  "_why_empty": "The source study (Sjögren E, Thörn H, Tannergren C. In Silico Modeling of Gastrointestinal Drug Absorption: Predictive Performance of Three Physiologically Based Absorption Models. Mol Pharm 2016;13(6):1763-78, PMID 26926043, DOI 10.1021/acs.molpharmaceut.5b00861) is closed access. Verified 2026-10-12: Unpaywall reports oa_status 'closed' with zero open-access locations; OpenAlex reports is_oa false; the article is not deposited in PubMed Central; and both the ACS article page and its Supporting Information return HTTP 403. The drug identities, physicochemical inputs, dosing conditions and the 44 observed clinical outcomes are therefore unavailable. SYNTHBODY will not approximate or reconstruct them, because a benchmark built on guessed inputs is indistinguishable from a fabricated one.",
+
+  "_how_to_populate": [
+    "Obtain the paper and its Supporting Information through institutional access or by purchase.",
+    "For each of the 44 oral administrations, add one object to the `cases` array below using the schema in `_schema`.",
+    "Record where every input came from in `input_provenance` — the benchmark report prints it.",
+    "Re-run: `python scripts/run_benchmark.py`. The head-to-head comparison against Simcyp, GastroPlus and GI-Sim unlocks automatically once `cases` is non-empty.",
+    "Do NOT derive any input from the observed plasma profile. The benchmark is an a-priori test; fitting to the outcome invalidates it."
+  ],
+
+  "_schema": {
+    "case_id": "string, unique, e.g. 'felodipine-10mg-IR'",
+    "drug_name": "string",
+    "dose_mg": "number",
+    "drug": {
+      "intrinsic_solubility_mg_per_mL": "number, solubility of the NEUTRAL species (S0)",
+      "effective_permeability_cm_per_s": "number, human jejunal Peff",
+      "pka_acidic": "number or null",
+      "pka_basic": "number or null",
+      "particle_radius_um": "number, initial particle radius (formulation input)",
+      "diffusivity_cm2_per_s": "number or null (null uses the SYNTHBODY default)",
+      "density_g_per_cm3": "number or null",
+      "bile_salt_solubilisation_per_mM": "number, 0 disables bile-salt solubilisation",
+      "precipitation_rate_per_h": "number, 0 disables precipitation",
+      "is_solution": "boolean, true if dosed as a solution"
+    },
+    "cl_L_per_h": "number, literature disposition clearance used for the convolution",
+    "v_central_L": "number, literature central volume",
+    "q_L_per_h": "number or null, for two-compartment disposition",
+    "v_peripheral_L": "number or null",
+    "f_gut": "number in (0,1], gut-wall availability; 1 if not applied",
+    "f_hepatic": "number in (0,1], hepatic first-pass availability; 1 if not applied",
+    "observed_auc": "number, OBSERVED clinical AUC (same concentration units as the model output)",
+    "observed_cmax": "number, OBSERVED clinical Cmax",
+    "observed_tmax_h": "number, OBSERVED clinical tmax in hours",
+    "simulation_horizon_h": "number",
+    "notes": "string",
+    "input_provenance": "object mapping each input name to the source it came from"
+  },
+
+  "_example_case_do_not_use": {
+    "_warning": "ILLUSTRATIVE STRUCTURE ONLY. These numbers are placeholders and correspond to no real drug. This object is NOT loaded by the benchmark — only the `cases` array is. Delete nothing; just add real entries to `cases`.",
+    "case_id": "example-drug-100mg",
+    "drug_name": "Example",
+    "dose_mg": 100.0,
+    "drug": {
+      "intrinsic_solubility_mg_per_mL": 0.01,
+      "effective_permeability_cm_per_s": 0.0002,
+      "pka_acidic": null,
+      "pka_basic": 7.0,
+      "particle_radius_um": 25.0,
+      "diffusivity_cm2_per_s": null,
+      "density_g_per_cm3": null,
+      "bile_salt_solubilisation_per_mM": 0.0,
+      "precipitation_rate_per_h": 0.0,
+      "is_solution": false
+    },
+    "cl_L_per_h": 20.0,
+    "v_central_L": 100.0,
+    "q_L_per_h": null,
+    "v_peripheral_L": null,
+    "f_gut": 1.0,
+    "f_hepatic": 1.0,
+    "observed_auc": 1.0,
+    "observed_cmax": 0.1,
+    "observed_tmax_h": 2.0,
+    "simulation_horizon_h": 48.0,
+    "notes": "placeholder",
+    "input_provenance": {"everything": "invented placeholder — not usable"}
+  },
+
+  "_comparability_warning": "Even with the cases populated, a fair head-to-head comparison requires that SYNTHBODY uses the SAME input information the original study used — no more. If you supply inputs the original modellers did not have, or tune anything against the observed outcomes, the resulting AAFE is not comparable to the published figures. The published values are also for 2016 software versions (Simcyp 13.1, GastroPlus 8.0, GI-Sim 4.1), not current releases, and the study's methodology was publicly contested (Comment and Reply, PMID 27983859).",
+
+  "cases": []
+}

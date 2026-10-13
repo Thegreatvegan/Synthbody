@@ -7,6 +7,9 @@ first.
 
 **Software version** 0.1.0 · **Engine revision** `engine-2026.10.12b`
 
+> Competitive benchmarking against Simcyp, GastroPlus and GI-Sim was attempted and
+> **could not be run**: the source study is paywalled. See [BENCHMARK.md](BENCHMARK.md).
+
 ---
 
 ## 0. Regulatory and intended-use status
@@ -203,6 +206,37 @@ this decision explicitly.
   paediatric, geriatric, pregnancy or disease physiology.
 
 ---
+
+## 4b. The GI absorption model — `research_only`
+
+Added to close the capability gap exposed by the Sjögren et al. benchmark. It
+predicts fraction absorbed from physicochemistry; it is **not validated**.
+
+- **Fasted state only.** No food effect. Mudie et al. report fed values with far
+  greater spread and strong meal-volume dependence; none of it is implemented.
+- **Predicts fraction ABSORBED, not bioavailability.** There is no gut-wall or
+  hepatic first-pass extraction inside the absorption model, and no efflux
+  transport. A drug can be fully absorbed and still have low bioavailability.
+- **No between-subject variability in gastric emptying.** This is visible in the
+  benchmark: predicted tmax is ~2.72 h for every subject while observed tmax
+  spans 1.07–3.55 h. Gastric emptying variability is one of the largest real
+  sources of oral-absorption variability and the model has no mechanism for it.
+- **Monodisperse spherical particles** at a single radius. No particle-size
+  distribution, no aggregation, no shape factor.
+- **The diffusion layer is `min(r, 30 µm)` floored at 1 µm**, not computed from
+  hydrodynamics. The floor is a numerical necessity (without it the depletion
+  tail is unintegrable) and it changes the equation from its textbook form.
+- **Precipitation is a single first-order rate**, not nucleation-and-growth, so
+  supersaturating formulations will be poorly represented.
+- **Uniform permeability** along the small intestine; no regional differences.
+- **Henderson–Hasselbalch solubility** with no salt effects, common-ion effects
+  or solid-form changes.
+- **Colonic parameters are SYNTHBODY defaults**, not measurements.
+- **Permeability is an input SYNTHBODY cannot measure.** In the shipped
+  theophylline benchmark it is `inferred`, which is why that benchmark sweeps it
+  rather than relying on one number.
+
+See [BENCHMARK.md](BENCHMARK.md) for what was and was not demonstrated.
 
 ## 5. Pharmacodynamics — every parameter is illustrative
 

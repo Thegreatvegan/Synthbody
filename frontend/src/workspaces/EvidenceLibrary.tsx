@@ -36,6 +36,7 @@ import {
 import { api } from "../lib/api";
 import { downloadText, pct, pctRaw, prettyUnit, seriesColour, sig, slug, toCsv } from "../lib/format";
 import { useStore } from "../lib/store";
+import { BenchmarkTab } from "./BenchmarkTab";
 import type {
   DatasetSummary,
   PbpkStructuralCheck,
@@ -45,7 +46,9 @@ import type {
 } from "../lib/types";
 
 export function EvidenceLibrary() {
-  const [tab, setTab] = useState<"validation" | "references" | "datasets" | "feasibility">("validation");
+  const [tab, setTab] = useState<
+    "validation" | "benchmark" | "references" | "datasets" | "feasibility"
+  >("validation");
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <Tabs
@@ -53,6 +56,11 @@ export function EvidenceLibrary() {
         onChange={setTab}
         tabs={[
           { id: "validation", label: "Model validation" },
+          {
+            id: "benchmark",
+            label: "Competitive benchmark",
+            title: "A-priori absorption benchmark, and the head-to-head comparison that could not be run",
+          },
           { id: "references", label: "Reference library" },
           { id: "datasets", label: "Observed datasets" },
           { id: "feasibility", label: "Feasibility assessment" },
@@ -60,6 +68,7 @@ export function EvidenceLibrary() {
       />
       <div className="flex min-h-0 flex-1">
         {tab === "validation" && <ValidationTab />}
+        {tab === "benchmark" && <BenchmarkTab />}
         {tab === "references" && <ReferencesTab />}
         {tab === "datasets" && <DatasetsTab />}
         {tab === "feasibility" && <FeasibilityTab />}

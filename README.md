@@ -52,8 +52,9 @@ Open <http://localhost:5180>.
 
 ```bash
 cd backend
-python -m pytest tests/ -q          # 199 tests
+python -m pytest tests/ -q          # 234 tests
 python scripts/run_validation.py    # reproduces every number in VALIDATION.md
+python scripts/run_benchmark.py     # reproduces every number in BENCHMARK.md
 ```
 
 ### Docker
@@ -78,7 +79,7 @@ UI on <http://localhost:5180>, API on <http://localhost:8011>.
 | **Systems** | The compartments and transport paths of the **active model** — and an explicit list of everything that is *not* modelled. |
 | **Analytics** | Monte Carlo population variability with percentile envelopes and exposure distributions; local, Morris and Sobol sensitivity analysis. |
 | **Experiments** | Stored runs grouped into experiments, with a reproduce button that re-executes a saved run and compares the input hash, engine revision and curve point by point. |
-| **Evidence** | Searchable reference library (28 entries, every PMID verified against PubMed), live validation results, the shipped observed datasets, and the feasibility assessment. |
+| **Evidence** | Searchable reference library (32 entries, every PMID verified against PubMed), live validation results, the competitive benchmark, the shipped observed datasets, and the feasibility assessment. |
 | **Reports** | Generates a complete methods-and-results document: inputs, parameter provenance, exposure metrics, solver diagnostics, independent validation, limitations, references. |
 
 ### Models
@@ -90,6 +91,7 @@ UI on <http://localhost:5180>, API on <http://localhost:8011>.
 | One-compartment Michaelis–Menten | `structurally_verified` | Numerics verified; no observed non-linear PK dataset ships |
 | Whole-body perfusion-limited PBPK (12 tissues) | `research_only` | Mass and flow balance close; predicted theophylline Vss within **1.04-fold** of the reported 0.5 L/kg. No concentration-time validation. |
 | Sigmoid Emax, indirect response (×4), effect compartment | `research_only` | Structurally verified; all shipped PD parameters are **illustrative** |
+| Compartmental GI absorption and transit (7-compartment CAT/ACAT) | `research_only` | Predicts fabs from physicochemistry. A-priori test on held-out Theoph: Cmax AAFE **1.08**, AUC AAFE **1.14**. Not validated for poorly soluble drugs. |
 
 Full numbers, including everything that went wrong: **[VALIDATION.md](VALIDATION.md)**
 
@@ -209,6 +211,7 @@ test suite exercise the numerics without a web server. Details:
 | Document | Contents |
 | --- | --- |
 | **[VALIDATION.md](VALIDATION.md)** | Every achieved accuracy figure, the fixed protocol, and every known problem the pipeline surfaced |
+| **[BENCHMARK.md](BENCHMARK.md)** | Competitive benchmark: the a-priori absorption test that ran, and the head-to-head vs Simcyp/GastroPlus/GI-Sim that was **refused** for lack of obtainable data |
 | **[SCIENTIFIC_LIMITATIONS.md](SCIENTIFIC_LIMITATIONS.md)** | What this software cannot tell you, and what would be needed to change that |
 | **[FEASIBILITY_MATRIX.md](FEASIBILITY_MATRIX.md)** | All 71 white-paper components mapped to implemented / simplified / not implemented / excluded |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Design decisions, module boundaries, API surface |

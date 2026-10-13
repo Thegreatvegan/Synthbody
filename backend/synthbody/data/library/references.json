@@ -535,6 +535,87 @@
       "license_note": "PubChem data are placed in the public domain by NCBI and are free to use and redistribute.",
       "access_note": "Compound identifiers, molecular formulae, molecular weights and XLogP3 values were retrieved programmatically on 2026-10-12. XLogP3 is a COMPUTED descriptor, not an experimental measurement, and is labelled `inferred` wherever SYNTHBODY uses it.",
       "relevance": "Source of chemical identity and the computed log P estimates used as PBPK inputs."
+    },
+    {
+      "id": "sjogren2016",
+      "citation": "Sj\u00f6gren E, Th\u00f6rn H, Tannergren C. In Silico Modeling of Gastrointestinal Drug Absorption: Predictive Performance of Three Physiologically Based Absorption Models. Mol Pharm. 2016;13(6):1763-78.",
+      "authors": "Sj\u00f6gren E; Th\u00f6rn H; Tannergren C",
+      "year": 2016,
+      "journal": "Mol Pharm",
+      "pmid": "26926043",
+      "doi": "10.1021/acs.molpharmaceut.5b00861",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/26926043/",
+      "kind": "primary_study",
+      "topics": [
+        "oral absorption",
+        "benchmark",
+        "Simcyp",
+        "GastroPlus",
+        "GI-Sim",
+        "AAFE"
+      ],
+      "license_note": "Copyrighted and paywalled; cited only. No values beyond the published abstract are used.",
+      "access_note": "NOT RETRIEVED. Verified closed access on 2026-10-12: Unpaywall reports oa_status 'closed' with zero OA locations, OpenAlex reports is_oa false, the article is not in PubMed Central, and both the ACS article page and its Supporting Information return HTTP 403. The 12 drug identities, their physicochemical inputs, dosing conditions and the 44 observed clinical outcomes are therefore unavailable to SYNTHBODY. Only the headline AAFE values stated in the public PubMed abstract are recorded, and they are NOT used as inputs to any SYNTHBODY computation.",
+      "relevance": "The benchmark this platform was asked to reproduce. Reports AAFE for AUC of 2.2 (Simcyp 13.1), 1.6 (GastroPlus 8.0) and 1.3 (GI-Sim 4.1); for Cmax 2.2, 1.6, 1.3; for tmax 1.7, 1.5, 1.4. Note that a published Comment and Reply exist (PMID 27983859) contesting aspects of the methodology, and that the figures refer to 2016 software versions."
+    },
+    {
+      "id": "sjogren2016_reply",
+      "citation": "Reply to \"Comment on 'In Silico Modeling of Gastrointestinal Drug Absorption: Predictive Performance of Three Physiologically Based Absorption Models'\". Mol Pharm. 2016.",
+      "authors": "Sj\u00f6gren E; Th\u00f6rn H; Tannergren C",
+      "year": 2016,
+      "journal": "Mol Pharm",
+      "pmid": "27983859",
+      "doi": null,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/27983859/",
+      "kind": "commentary",
+      "topics": [
+        "oral absorption",
+        "benchmark",
+        "methodology dispute"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed; full text not retrieved.",
+      "relevance": "Records that the benchmark's methodology was publicly contested. Any comparison against its numbers should cite this exchange."
+    },
+    {
+      "id": "mudie2010",
+      "citation": "Mudie DM, Amidon GL, Amidon GE. Physiological parameters for oral delivery and in vitro testing. Mol Pharm. 2010;7(5):1388-405.",
+      "authors": "Mudie DM; Amidon GL; Amidon GE",
+      "year": 2010,
+      "journal": "Mol Pharm",
+      "pmid": "20822152",
+      "doi": "10.1021/mp100149j",
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3025274/",
+      "kind": "parameter_compilation",
+      "topics": [
+        "gastrointestinal physiology",
+        "oral absorption",
+        "pH",
+        "transit",
+        "bile salts"
+      ],
+      "license_note": "Open access via PubMed Central (green). The PMC copy states it is available for text mining and fair use. SYNTHBODY reproduces individual physiological measurements with attribution.",
+      "access_note": "RETRIEVED AND USED. Full text obtained from PMC3025274 via the NCBI efetch API on 2026-10-12 and parsed programmatically from the JATS XML. Gastric pH and half-emptying time, small-intestinal transit time, volume, length, regional pH and bile-salt concentrations were read from its published tables.",
+      "relevance": "The source of essentially all fasted-state GI physiology in the SYNTHBODY absorption model."
+    },
+    {
+      "id": "yu_amidon1999",
+      "citation": "Yu LX, Amidon GL. A compartmental absorption and transit model for estimating oral drug absorption. Int J Pharm. 1999;186(2):119-25.",
+      "authors": "Yu LX; Amidon GL",
+      "year": 1999,
+      "journal": "Int J Pharm",
+      "pmid": "10486429",
+      "doi": "10.1016/s0378-5173(99)00147-7",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/10486429/",
+      "kind": "method",
+      "topics": [
+        "CAT model",
+        "oral absorption",
+        "transit compartments"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "NOT RETRIEVED (Unpaywall: closed). Only the structural convention of seven transit compartments in series is adopted, which is widely reproduced in the secondary literature. No numerical values were taken from this paper.",
+      "relevance": "The origin of the compartmental absorption and transit (CAT) structure implemented in synthbody.engine.models.absorption."
     }
   ]
 }

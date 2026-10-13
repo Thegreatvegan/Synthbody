@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_name": "SYNTHBODY human gastrointestinal physiology (fasted state)",
+  "provenance": {
+    "primary_source": {
+      "citation": "Mudie DM, Amidon GL, Amidon GE. Physiological parameters for oral delivery and in vitro testing. Mol Pharm. 2010;7(5):1388-405.",
+      "pmid": "20822152",
+      "doi": "10.1021/mp100149j",
+      "pmc": "PMC3025274",
+      "open_access": true,
+      "oa_status": "green (PubMed Central)",
+      "extraction_method": "Extracted programmatically from the PMC JATS XML (efetch db=pmc id=3025274) on 2026-10-12. Values were read out of the published tables rather than transcribed by hand from a PDF.",
+      "license_note": "The PMC copy states it is available for text mining and fair use. SYNTHBODY reproduces individual physiological measurements (facts) with full attribution; no text or table layout is reproduced."
+    },
+    "secondary_sources": {
+      "small_intestine_geometry": {
+        "citation": "US EPA httk package, physiology.data (Small Intestine Radius, Small Intestine Mean Residence Time).",
+        "pmid": "30220889",
+        "license": "GPL-3",
+        "note": "httk gives a human small-intestinal mean residence time of 199.2 min, which independently corroborates the 192 min fasted transit mean reported by Mudie et al. The two were obtained from unrelated sources."
+      },
+      "model_structure": {
+        "citation": "Yu LX, Amidon GL. A compartmental absorption and transit model for estimating oral drug absorption. Int J Pharm. 1999;186(2):119-25.",
+        "pmid": "10486429",
+        "doi": "10.1016/s0378-5173(99)00147-7",
+        "open_access": false,
+        "note": "SYNTHBODY implements the CAT structure (N transit compartments in series with a single transit rate constant) as described in the widely reproduced literature. The primary paper is paywalled and was NOT retrieved; no numerical values were taken from it. Only the structural convention N = 7 is adopted."
+      }
+    },
+    "honest_caveat": "Fasted-state parameters only. The fed state is NOT implemented: Mudie et al. report fed values with far greater spread and strong dependence on meal volume and caloric load, and SYNTHBODY has no food-effect model. Any simulation here represents a fasted subject given the dose with water."
+  },
+
+  "state": "fasted",
+
+  "stomach": {
+    "ph": {
+      "value": 1.7,
+      "unit": "",
+      "origin": "measured",
+      "basis": "Median fasted gastric pH, Mudie et al. Table 3. Reported medians 1.7, 1.8; mean 2.9 +- 1.97; range 1.0-2.5.",
+      "population_range": [1.0, 2.5]
+    },
+    "volume_mL": {
+      "value": 250.0,
+      "unit": "mL",
+      "origin": "inferred",
+      "basis": "Mudie et al. report a basal fasted gastric volume of ~28 mL and ~296 mL after 300 mL of water. SYNTHBODY assumes the dose is taken with a glass of water and uses 250 mL. This is a dosing-condition assumption, not a measurement.",
+      "population_range": [28.0, 323.0]
+    },
+    "half_emptying_time_min": {
+      "value": 15.8,
+      "unit": "min",
+      "origin": "measured",
+      "basis": "Fasted gastric half-emptying time with 300 mL water, Mudie et al. Table 6. Range 11.5-17.0 min. A value of 12 min is reported for saline.",
+      "population_range": [11.5, 17.0]
+    }
+  },
+
+  "small_intestine": {
+    "n_compartments": {
+      "value": 7,
+      "unit": "",
+      "origin": "derived",
+      "basis": "The CAT model convention of seven transit compartments in series (Yu & Amidon 1999). A structural choice, not a measurement."
+    },
+    "total_transit_time_min": {
+      "value": 192.0,
+      "unit": "min",
+      "origin": "measured",
+      "basis": "Mean fasted small-intestinal transit time for coated pellets, Mudie et al. Table 6. Range 90-324 min. Independently corroborated by the httk value of 199.2 min.",
+      "population_range": [90.0, 324.0]
+    },
+    "total_volume_mL": {
+      "value": 105.0,
+      "unit": "mL",
+      "origin": "measured",
+      "basis": "Mean total fasted small-intestinal liquid volume by MRI, Mudie et al. Table 4 (105 +- 72 mL; median 83 mL; range 45-319 mL).",
+      "population_range": [45.0, 319.0]
+    },
+    "length_cm": {
+      "value": 680.0,
+      "unit": "cm",
+      "origin": "measured",
+      "basis": "Mean anatomical small-intestinal length, Mudie et al. Table 4. Range 255-1128 cm.",
+      "population_range": [255.0, 1128.0]
+    },
+    "radius_cm": {
+      "value": 1.75,
+      "unit": "cm",
+      "origin": "measured",
+      "basis": "Human small-intestinal radius from the US EPA httk physiology dataset.",
+      "population_range": [1.0, 2.5]
+    },
+    "ph_profile": {
+      "values": [6.2, 6.4, 6.6, 6.8, 6.9, 7.0, 7.2],
+      "unit": "",
+      "origin": "inferred",
+      "basis": "Mudie et al. Table 3 give fasted median pH of 6.1-6.2 (duodenum), ~6.8-7.1 (jejunum, means) and 7.2 (ileum, median). SYNTHBODY interpolates monotonically across the seven compartments between the measured duodenal and ileal endpoints. The endpoints are measured; the interpolation between them is a modelling choice.",
+      "measured_endpoints": {"duodenum": 6.2, "ileum": 7.2},
+      "population_range": [5.3, 8.1]
+    },
+    "bile_salt_mM": {
+      "values": [2.7, 2.7, 2.6, 2.6, 2.4, 2.2, 2.0],
+      "unit": "mmol/L",
+      "origin": "inferred",
+      "basis": "Mudie et al. Table 2 give fasted median bile-salt concentrations of 2.7 mM (duodenum), 2.6 mM (jejunum) and a mean of 2 +- 0.2 mM (ileum). The declining profile across compartments is interpolated between those measured points.",
+      "population_range": [0.1, 13.3]
+    }
+  },
+
+  "colon": {
+    "ph": {
+      "value": 6.4,
+      "unit": "",
+      "origin": "illustrative",
+      "basis": "SYNTHBODY default. Mudie et al. do not tabulate colonic pH. Colonic absorption is modelled only as a small residual term and this value should not be relied upon.",
+      "population_range": [5.5, 7.5]
+    },
+    "volume_mL": {
+      "value": 50.0,
+      "unit": "mL",
+      "origin": "illustrative",
+      "basis": "SYNTHBODY default, not from a retrieved source."
+    },
+    "transit_time_min": {
+      "value": 900.0,
+      "unit": "min",
+      "origin": "illustrative",
+      "basis": "SYNTHBODY default (~15 h). Not from a retrieved source. Colonic transit is highly variable."
+    },
+    "relative_permeability_factor": {
+      "value": 0.1,
+      "unit": "fraction",
+      "origin": "illustrative",
+      "basis": "Colonic effective permeability is assumed to be one tenth of small-intestinal permeability, reflecting the much smaller absorptive surface area. This is a SYNTHBODY default and is NOT a measurement."
+    }
+  },
+
+  "constants": {
+    "diffusion_layer_thickness_um": {
+      "value": 30.0,
+      "unit": "",
+      "origin": "illustrative",
+      "basis": "Maximum hydrodynamic (Nernst) diffusion layer thickness in micrometres. The model uses h = min(particle radius, 30 um), a widely used convention. Mudie et al. Table 1 identify the diffusion layer as depending on fluid velocity, viscosity and particle size; SYNTHBODY does not compute it from hydrodynamics."
+    },
+    "default_diffusion_coefficient_cm2_per_s": {
+      "value": 7.0e-6,
+      "unit": "",
+      "origin": "illustrative",
+      "basis": "Typical aqueous diffusion coefficient for a small organic molecule at body temperature. A SYNTHBODY default used only when the operator does not supply one."
+    },
+    "drug_density_g_per_cm3": {
+      "value": 1.2,
+      "unit": "",
+      "origin": "illustrative",
+      "basis": "Typical true density of an organic crystalline solid. A SYNTHBODY default."
+    }
+  }
+}

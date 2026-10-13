@@ -525,6 +525,71 @@ def pbpk_structural_check() -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
+# Benchmarks
+# ---------------------------------------------------------------------------
+@router.get("/benchmark/theophylline-apriori")
+def benchmark_theophylline_apriori() -> dict[str, Any]:
+    """A-priori oral absorption benchmark on the openly licensed Theoph dataset.
+
+    Absorption is predicted from GI physiology and theophylline physicochemistry
+    and is never fitted to these profiles. Runs live rather than returning a
+    cached claim.
+    """
+    from synthbody.engine.analysis.benchmark import run_theophylline_apriori
+
+    return run_theophylline_apriori()
+
+
+@router.get("/benchmark/orbito-comparison")
+def benchmark_orbito_comparison() -> dict[str, Any]:
+    """Head-to-head against Simcyp / GastroPlus / GI-Sim.
+
+    Returns `comparison_available: false` with a documented refusal unless the
+    OrBiTo case library has been populated. The source study is paywalled, and
+    SYNTHBODY will not build a comparison from reconstructed inputs.
+    """
+    from synthbody.engine.analysis.benchmark import compare_against_published
+
+    return compare_against_published()
+
+
+@router.get("/benchmark/gi-physiology")
+def benchmark_gi_physiology() -> dict[str, Any]:
+    """The GI physiology behind the absorption model, with its provenance."""
+    from synthbody.engine.models.absorption import gi_provenance, load_gi_tract
+
+    t = load_gi_tract()
+    return {
+        "provenance": gi_provenance(),
+        "state": "fasted",
+        "stomach": {
+            "ph": t.stomach_ph,
+            "volume_mL": t.stomach_volume_mL,
+            "half_emptying_min": t.gastric_half_emptying_min,
+            "emptying_rate_per_h": t.gastric_emptying_rate_per_h,
+        },
+        "small_intestine": {
+            "n_compartments": t.n_si,
+            "total_transit_min": t.si_transit_total_min,
+            "transit_rate_per_h": t.si_transit_rate_per_h,
+            "total_volume_mL": t.si_volume_mL,
+            "compartment_volume_mL": t.si_compartment_volume_L * 1000.0,
+            "length_cm": t.si_length_cm,
+            "radius_cm": t.si_radius_cm,
+            "ph_profile": list(t.si_ph),
+            "bile_salt_mM": list(t.si_bile_salt_mM),
+        },
+        "colon": {
+            "ph": t.colon_ph,
+            "volume_mL": t.colon_volume_mL,
+            "transit_min": t.colon_transit_min,
+            "relative_permeability": t.colon_perm_factor,
+        },
+        "raw_entries": t.raw,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Reports
 # ---------------------------------------------------------------------------
 @router.post("/reports")

@@ -30,6 +30,9 @@ import type {
   StoredSimulation,
   ValidationReport,
   ValidationTargets,
+  TheophyllineBenchmark,
+  OrbitoComparison,
+  GIPhysiology,
 } from "./types";
 
 const BASE = "/api";
@@ -184,6 +187,12 @@ export const api = {
   validationTargets: () => get<ValidationTargets>("/validation/targets"),
   validation: (targetId: string) => get<ValidationReport>(`/validation/${targetId}`),
   pbpkCheck: () => get<PbpkStructuralCheck>("/validation/pbpk/structural-check"),
+
+  // ---- benchmarks
+  benchmarkTheophylline: () =>
+    get<TheophyllineBenchmark>("/benchmark/theophylline-apriori"),
+  benchmarkOrbito: () => get<OrbitoComparison>("/benchmark/orbito-comparison"),
+  giPhysiology: () => get<GIPhysiology>("/benchmark/gi-physiology"),
 
   // ---- reports
   report: (r: {

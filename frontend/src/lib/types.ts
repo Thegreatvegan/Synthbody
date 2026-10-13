@@ -763,3 +763,109 @@ export interface AuditEntry {
   detail: Record<string, unknown>;
   software_version: string;
 }
+
+// ---------------------------------------------------------------------------
+// Benchmarks
+// ---------------------------------------------------------------------------
+export interface FoldErrorSummary {
+  available: boolean;
+  reason?: string;
+  n: number;
+  aafe: number;
+  afe: number;
+  median_fold_error: number;
+  max_fold_error: number;
+  fraction_within_1_25_fold: number;
+  fraction_within_1_5_fold: number;
+  fraction_within_2_fold: number;
+  fraction_within_3_fold: number;
+  fraction_over_2_fold_error: number;
+  predicted: number[];
+  observed: number[];
+  fold_errors: number[];
+}
+
+export interface BenchmarkCaseResult {
+  case_id: string;
+  drug_name: string;
+  dose_mg: number;
+  predicted_auc: number;
+  predicted_cmax: number;
+  predicted_tmax_h: number;
+  predicted_fabs: number;
+  observed_auc: number | null;
+  observed_cmax: number | null;
+  observed_tmax_h: number | null;
+  mass_balance_error: number;
+  solver_warnings: string[];
+  time_h: number[];
+  concentration: number[];
+}
+
+export interface SweepPoint {
+  peff_cm_per_s: number;
+  mean_predicted_fabs: number;
+  evaluation: { n_administrations: number; metrics: Record<string, FoldErrorSummary> };
+  case_results: BenchmarkCaseResult[];
+}
+
+export interface PhyschemEntry {
+  value: number;
+  origin: ParameterOrigin;
+  source: string;
+}
+
+export interface TheophyllineBenchmark {
+  benchmark_id: string;
+  software_version: string;
+  engine_revision: string;
+  dataset: DatasetSummary;
+  held_out_subject_ids: string[];
+  calibration_subject_ids: string[];
+  disposition_source: { cl_per_kg_L_per_h: number; v_per_kg_L: number; note: string };
+  fitted_ka_for_reference_per_h: number;
+  physchem: Record<string, PhyschemEntry>;
+  peff_sweep: SweepPoint[];
+  prespecified_peff_cm_per_s: number;
+  headline_result: SweepPoint | null;
+  headline_note: string;
+  best_by_cmax_aafe: SweepPoint | null;
+  interpretation: string;
+  honest_scope: string;
+}
+
+export interface OrbitoComparison {
+  software_version: string;
+  engine_revision: string;
+  published_results: Record<string, { auc: number; cmax: number; tmax: number }>;
+  published_results_provenance: string;
+  access_record: Record<string, string>;
+  case_library: { status: string; n_cases?: number; [k: string]: unknown };
+  comparison_available: boolean;
+  refusal_reason?: string;
+  what_would_be_needed?: string[];
+  how_to_supply?: string;
+  n_administrations?: number;
+  equivalent_experiment_count?: boolean;
+  synthbody_results?: Record<string, number>;
+  comparability_caveat?: string;
+}
+
+export interface GIPhysiology {
+  provenance: Record<string, unknown>;
+  state: string;
+  stomach: Record<string, number>;
+  small_intestine: {
+    n_compartments: number;
+    total_transit_min: number;
+    transit_rate_per_h: number;
+    total_volume_mL: number;
+    compartment_volume_mL: number;
+    length_cm: number;
+    radius_cm: number;
+    ph_profile: number[];
+    bile_salt_mM: number[];
+  };
+  colon: Record<string, number>;
+  raw_entries: Record<string, unknown>;
+}
