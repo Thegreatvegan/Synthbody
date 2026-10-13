@@ -49,7 +49,7 @@ from synthbody.engine.physiology.covariates import (
     smoking_cyp1a2_clearance_factor,
 )
 from synthbody.engine.provenance import ParameterOrigin, ParameterRecord
-from synthbody.engine.registry import build_model, get_drug, get_model_spec
+from synthbody.engine.registry import ModelSpec, build_model, get_drug, get_model_spec
 from synthbody.schemas.api import (
     ComparisonRequest,
     PopulationRequest,
@@ -309,6 +309,14 @@ def build_doses(regimen: RegimenIn, model_id: str) -> list[DoseEvent]:
     target = spec.dose_target_state.get(regimen.route)
     if target is None:
         raise ServiceError(f"No dose target state defined for route {regimen.route!r}.")
+    if regimen.n_doses > 1 and not spec.supports_multiple_dosing:
+        raise ServiceError(
+            f"Model {model_id!r} supports single dosing only. Its dose enters as a "
+            "population of solid particles whose shared radius is derived from the "
+            "amount initially administered; a second dose arriving mid-dissolution "
+            "would make that radius meaningless. Requesting n_doses > 1 is refused "
+            "rather than answered with a number the model cannot support."
+        )
     return expand_regimen(
         amount_mg=regimen.dose_mg,
         route=regimen.route,
@@ -318,6 +326,25 @@ def build_doses(regimen: RegimenIn, model_id: str) -> list[DoseEvent]:
         duration_h=regimen.infusion_duration_h if regimen.route == "iv_infusion" else 0.0,
         target_state=target,
     )
+
+
+def notify_dose(model: BaseModel, spec: ModelSpec, dose_mg: float) -> None:
+    """Tell a model the administered amount, when it needs to know.
+
+    The absorption models express fraction absorbed and the shared particle
+    radius relative to the dose, so they cannot derive either from the state
+    vector alone. Every other model ignores this entirely -- the dose reaches
+    them as a state increment and nothing downstream depends on knowing it.
+    """
+    if not spec.requires_dose_notification:
+        return
+    setter = getattr(model, "set_dose", None)
+    if setter is None:
+        raise ServiceError(
+            f"Model {spec.model_id!r} declares requires_dose_notification but has no "
+            "set_dose method. This is a registry/model mismatch, not a user error."
+        )
+    setter(dose_mg)
 
 
 # ---------------------------------------------------------------------------
@@ -335,6 +362,7 @@ def run_simulation(
         apply_covariates=req.apply_patient_covariates,
     )
     doses = build_doses(req.regimen, req.model_id)
+    notify_dose(resolved.model, resolved.spec, req.regimen.dose_mg)
     grid = np.linspace(0.0, req.simulation_horizon_h, req.n_output_points)
 
     result = simulate(
@@ -661,9 +689,15 @@ def run_population(req: PopulationRequest, session: Session | None = None) -> di
             "terminal_half_life_h": n.terminal_half_life_h or float("nan"),
         }
 
+    def _build_replicate(p: dict[str, float]) -> BaseModel:
+        """Each Monte Carlo replicate is a fresh model, so each needs the dose."""
+        m = build_model(req.model_id, p)
+        notify_dose(m, resolved.spec, req.regimen.dose_mg)
+        return m
+
     t0 = time.perf_counter()
     result = run_population_simulation(
-        lambda p: build_model(req.model_id, p),
+        _build_replicate,
         pop_spec,
         t_end_h=req.simulation_horizon_h,
         doses=doses,
@@ -863,6 +897,7 @@ def run_sensitivity(req: SensitivityRequest, session: Session | None = None) -> 
         n_calls["n"] += 1
         try:
             model = build_model(req.model_id, params)
+            notify_dose(model, resolved.spec, req.regimen.dose_mg)
             res = simulate(
                 model,
                 t_end_h=req.simulation_horizon_h,

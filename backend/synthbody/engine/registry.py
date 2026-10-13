@@ -20,6 +20,8 @@ from synthbody.engine.models.compartmental import (
     OneCompartmentMichaelisMenten,
     TwoCompartment,
 )
+from synthbody.engine.models.absorption import CompartmentalAbsorption, OralDrugInput
+from synthbody.engine.models.oral_pbpk import OralPBPK
 from synthbody.engine.models.pbpk import PerfusionLimitedPBPK
 from synthbody.engine.physiology.partition import DrugPhysChem
 from synthbody.engine.provenance import ValidationStatus
@@ -69,6 +71,23 @@ class ModelSpec:
     supports_population: bool = True
     supports_sensitivity: bool = True
     has_analytic_solution: bool = False
+    supports_multiple_dosing: bool = True
+    """False for models whose dose enters as a solid particle population.
+
+    The absorption models derive a shared particle radius from the total
+    undissolved mass against the mass initially dosed. A second dose arriving
+    while the first is still dissolving would make that radius meaningless --
+    the two populations are at different stages of dissolution and the model
+    represents only one. Rather than return a quietly wrong number, those
+    models decline multiple dosing. Removing this restriction needs a
+    polydisperse particle representation, which is tracked in PROGRESS.md.
+    """
+    requires_dose_notification: bool = False
+    """True for models exposing ``set_dose``, which need the dose before running.
+
+    ``fraction_absorbed`` and the particle radius are both expressed relative to
+    the administered amount, so these models have to be told what it is.
+    """
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -113,6 +132,8 @@ class ModelSpec:
             "supports_population": self.supports_population,
             "supports_sensitivity": self.supports_sensitivity,
             "has_analytic_solution": self.has_analytic_solution,
+            "supports_multiple_dosing": self.supports_multiple_dosing,
+            "requires_dose_notification": self.requires_dose_notification,
         }
 
 
@@ -169,11 +190,85 @@ def _build_pbpk(params: dict[str, float], **_: Any) -> BaseModel:
     )
 
 
+def _oral_drug_input(params: dict[str, float]) -> OralDrugInput:
+    """Shared physicochemical inputs for the two absorption-bearing models."""
+    pka = params.get("pKa_acidic", 0.0)
+    return OralDrugInput(
+        intrinsic_solubility_mg_per_mL=params.get("S0", 1.0),
+        effective_permeability_cm_per_s=params.get("Peff", 3.0e-4),
+        # 0 is the schema's "no ionisable group" sentinel: a pKa of exactly zero
+        # is not a meaningful input for an orally administered small molecule.
+        pka_acidic=pka if pka and pka > 0 else None,
+        particle_radius_um=params.get("r_particle", 25.0),
+        precipitation_rate_per_h=params.get("k_precip", 0.0),
+    )
+
+
+def _build_absorption(params: dict[str, float], **_: Any) -> BaseModel:
+    return CompartmentalAbsorption(drug=_oral_drug_input(params))
+
+
+def _build_oral_pbpk(params: dict[str, float], **_: Any) -> BaseModel:
+    drug = DrugPhysChem(
+        log_p=params["logP"],
+        fraction_unbound_plasma=params["fu_p"],
+        blood_plasma_ratio=params.get("BP", 1.0),
+    )
+    return OralPBPK(
+        drug_physchem=drug,
+        oral_input=_oral_drug_input(params),
+        body_weight_kg=params.get("BW", 70.0),
+        hepatic_intrinsic_clearance_L_per_h=params.get("CLint_H", 0.0),
+        renal_clearance_L_per_h=params.get("CL_R", 0.0),
+        gut_intrinsic_clearance_L_per_h=params.get("CLint_gut", 0.0),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Specs
 # ---------------------------------------------------------------------------
 _P = ParameterSchema
 _O = ObservableSchema
+
+# Shared between the absorption model and the oral PBPK model so the two cannot
+# drift apart in their physicochemical input schema.
+_ABSORPTION_PARAMS = (
+    _P("S0", "Intrinsic solubility", "mg/mL", 1.0, 1e-6, 1000.0,
+       "Solubility of the neutral species. pH-dependent solubility is computed "
+       "from this and the pKa by Henderson-Hasselbalch.",
+       group="Physicochemistry", step=0.1),
+    _P("Peff", "Effective permeability", "cm/s", 3.0e-4, 1e-7, 1e-2,
+       "Human jejunal effective permeability. Above roughly 2-4e-4 cm/s is "
+       "conventionally considered high permeability.",
+       group="Physicochemistry", step=1e-5),
+    _P("pKa_acidic", "Acidic pKa", "", 0.0, 0.0, 14.0,
+       "Acidic dissociation constant. Leave at 0 for a non-ionisable compound.",
+       group="Physicochemistry", step=0.1),
+    _P("r_particle", "Particle radius", "um", 25.0, 0.01, 500.0,
+       "Initial radius of the monodisperse particle population. A formulation "
+       "input, not a property of the drug.",
+       group="Formulation", step=1.0),
+    _P("k_precip", "Precipitation rate", "1/h", 0.0, 0.0, 100.0,
+       "First-order precipitation of supersaturated drug. 0 disables it.",
+       group="Formulation", step=0.1),
+)
+
+_ABSORPTION_OBSERVABLES = (
+    _O("fraction_absorbed", "Fraction absorbed", "fraction",
+       "Cumulative fraction of the dose that has crossed the gut wall. This is "
+       "fraction ABSORBED, not bioavailability: no first-pass extraction is "
+       "applied in the standalone absorption model."),
+    _O("cumulative_absorbed", "Cumulative absorbed", "mg",
+       "Absorbed mass; this is the quantity convolved with a disposition model."),
+    _O("absorption_rate", "Absorption rate", "mg",
+       "Numerical derivative of the cumulative absorbed curve."),
+    _O("dissolved_total", "Dissolved in lumen", "mg",
+       "Total dissolved drug across stomach, small intestine and colon."),
+    _O("solid_total", "Undissolved in lumen", "mg",
+       "Total solid drug remaining anywhere in the tract."),
+    _O("faecal_loss", "Lost to faeces", "mg",
+       "Drug that transited past the absorptive region without being absorbed."),
+)
 
 
 @lru_cache
@@ -181,6 +276,22 @@ def model_specs() -> dict[str, ModelSpec]:
     one_cmt = OneCompartmentFirstOrderAbsorption(cl_L_per_h=2.8, v_L=34.0, ka_per_h=1.5)
     two_cmt = TwoCompartment(cl_L_per_h=10.0, v1_L=10.0, q_L_per_h=10.0, v2_L=10.0)
     mm = OneCompartmentMichaelisMenten(vmax_mg_per_h=30.0, km_mg_per_L=5.0, v_L=50.0)
+    # Probe instances, built only to read their self-declared description,
+    # assumptions, limitations and validation status, so the registry and the
+    # model classes cannot disagree about what a model claims.
+    absorption = CompartmentalAbsorption(
+        drug=OralDrugInput(
+            intrinsic_solubility_mg_per_mL=1.0, effective_permeability_cm_per_s=3.0e-4
+        )
+    )
+    oral_pbpk = OralPBPK(
+        drug_physchem=DrugPhysChem(
+            log_p=-0.02, fraction_unbound_plasma=0.6, blood_plasma_ratio=0.82
+        ),
+        oral_input=OralDrugInput(
+            intrinsic_solubility_mg_per_mL=1.0, effective_permeability_cm_per_s=3.0e-4
+        ),
+    )
 
     specs: list[ModelSpec] = [
         ModelSpec(
@@ -376,6 +487,123 @@ def model_specs() -> dict[str, ModelSpec]:
             builder=_build_pbpk,
             dose_target_state={"oral": 0, "iv_bolus": 2, "iv_infusion": 2},
             has_analytic_solution=False,
+        ),
+        ModelSpec(
+            model_id="gi_absorption_cat",
+            name=absorption.model_name,
+            short_name="GI absorption (7-cmt)",
+            description=(
+                "Seven-compartment compartmental absorption and transit model: gastric "
+                "emptying, small-intestinal transit, pH-dependent solubility, "
+                "Nernst-Brunner dissolution of shrinking particles and "
+                "permeability-limited uptake. Predicts the fraction absorbed and the "
+                "absorption-rate profile from physicochemistry alone, with no "
+                "disposition model attached."
+            ),
+            category="Absorption",
+            routes=("oral",),
+            parameters=_ABSORPTION_PARAMS,
+            observables=(
+                _O("fraction_absorbed", "Fraction absorbed", "fraction",
+                   "Cumulative fraction of the dose across the gut wall. Fraction "
+                   "ABSORBED, not bioavailability.", True),
+            ) + _ABSORPTION_OBSERVABLES[1:],
+            validation_status=absorption.validation_status,
+            validation_summary=absorption.validation_summary,
+            reference_ids=tuple(absorption.reference_ids),
+            assumptions=tuple(absorption.assumptions),
+            limitations=tuple(absorption.limitations),
+            builder=_build_absorption,
+            dose_target_state={"oral": 0},
+            # No plasma concentration exists in this model, so the population and
+            # sensitivity workspaces -- which are built around exposure metrics
+            # derived from a concentration-time curve -- have nothing to report.
+            supports_population=False,
+            supports_sensitivity=True,
+            has_analytic_solution=False,
+            supports_multiple_dosing=False,
+            requires_dose_notification=True,
+        ),
+        ModelSpec(
+            model_id="pbpk_oral_acat",
+            name=oral_pbpk.model_name,
+            short_name="Oral PBPK (ACAT + 12 tissue)",
+            description=oral_pbpk.description,
+            category="Physiologically based PK",
+            routes=("oral",),
+            parameters=(
+                _P("logP", "log P (octanol:water)", "", -0.02, -3.0, 7.0,
+                   "Partition coefficient of the neutral species, log10.",
+                   group="Physicochemistry", step=0.1),
+                _P("fu_p", "Fraction unbound in plasma", "fraction", 0.6, 0.001, 1.0,
+                   "Unbound fraction in plasma.", group="Physicochemistry", step=0.01),
+                _P("BP", "Blood:plasma ratio", "ratio", 0.82, 0.1, 5.0,
+                   "Whole blood to plasma concentration ratio.",
+                   group="Physicochemistry", step=0.05),
+            ) + _ABSORPTION_PARAMS + (
+                _P("CLint_H", "Hepatic intrinsic clearance", "L/h", 4.5, 0.0, 10000.0,
+                   "Intrinsic clearance on unbound drug in the liver. Hepatic "
+                   "first-pass extraction emerges from this and liver blood flow.",
+                   True, 0.75, 0.5, group="Elimination"),
+                _P("CLint_gut", "Gut-wall intrinsic clearance", "L/h", 0.0, 0.0, 10000.0,
+                   "Intrinsic clearance on unbound drug in the gut wall. Zero by "
+                   "default: SYNTHBODY ships no evidence base for this parameter, so "
+                   "any non-zero value is the operator's assumption.",
+                   True, 0.75, 0.5, group="Elimination"),
+                _P("CL_R", "Renal clearance", "L/h", 0.0, 0.0, 100.0,
+                   "Renal plasma clearance.", True, 0.75, 0.05, group="Elimination"),
+                _P("BW", "Body weight", "", 70.0, 1.0, 300.0,
+                   "Body weight in kg; scales all organ volumes and flows.",
+                   group="Physiology", step=1.0),
+            ),
+            observables=(
+                _O("plasma_concentration", "Plasma concentration (venous)", "mg/L",
+                   "What a peripheral venous blood draw would report. This is the "
+                   "observable that has been tested against observed human data.", True),
+                _O("bioavailable_fraction", "Fraction past the gut wall", "fraction",
+                   "Absorbed dose less cumulative gut-wall extraction. The hepatic "
+                   "first-pass factor is reported separately as F_hepatic_predicted, "
+                   "because cumulative hepatic and systemic elimination share one ledger."),
+                _O("gut_wall_extracted", "Gut-wall extraction", "mg",
+                   "Cumulative drug removed by gut-wall metabolism. Zero unless "
+                   "CLint_gut is set."),
+                _O("C_liver", "Liver concentration", "mg/L",
+                   "Total liver tissue concentration. UNVALIDATED: no observed human "
+                   "tissue data ships with SYNTHBODY."),
+                _O("C_gut", "Gut concentration", "mg/L",
+                   "Total gut tissue concentration, the compartment absorbed drug "
+                   "enters. UNVALIDATED."),
+                _O("C_kidney", "Kidney concentration", "mg/L", "UNVALIDATED."),
+                _O("C_brain", "Brain concentration", "mg/L",
+                   "UNVALIDATED, and no blood-brain barrier is modelled, so this "
+                   "overestimates CNS exposure for actively excluded compounds."),
+                _O("C_adipose", "Adipose concentration", "mg/L", "UNVALIDATED."),
+                _O("C_muscle", "Muscle concentration", "mg/L", "UNVALIDATED."),
+                _O("C_heart", "Heart concentration", "mg/L", "UNVALIDATED."),
+                _O("C_lung", "Lung concentration", "mg/L", "UNVALIDATED."),
+                _O("C_spleen", "Spleen concentration", "mg/L", "UNVALIDATED."),
+                _O("C_bone", "Bone concentration", "mg/L", "UNVALIDATED."),
+                _O("C_skin", "Skin concentration", "mg/L", "UNVALIDATED."),
+                _O("C_rest", "Remainder concentration", "mg/L", "UNVALIDATED."),
+                _O("arterial_blood_concentration", "Arterial blood concentration", "mg/L",
+                   "Arterial pool concentration."),
+                _O("venous_blood_concentration", "Venous blood concentration", "mg/L",
+                   "Venous pool concentration."),
+                _O("amount_eliminated", "Cumulative eliminated", "mg",
+                   "Hepatic plus renal elimination. Mass-balance bookkeeping."),
+            ) + _ABSORPTION_OBSERVABLES,
+            validation_status=oral_pbpk.validation_status,
+            validation_summary=oral_pbpk.validation_summary,
+            reference_ids=tuple(oral_pbpk.reference_ids),
+            assumptions=tuple(oral_pbpk.assumptions),
+            limitations=tuple(oral_pbpk.limitations),
+            builder=_build_oral_pbpk,
+            dose_target_state={"oral": 0},
+            supports_population=True,
+            supports_sensitivity=True,
+            has_analytic_solution=False,
+            supports_multiple_dosing=False,
+            requires_dose_notification=True,
         ),
     ]
     return {s.model_id: s for s in specs}
