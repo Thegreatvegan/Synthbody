@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "synthbody"
+version = "0.1.0"
+description = "SYNTHBODY — research-grade virtual-patient pharmacokinetic/pharmacodynamic simulation platform"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+include = ["synthbody*"]
+
+[tool.setuptools.package-data]
+synthbody = ["data/library/*.json", "data/datasets/*.csv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+filterwarnings = ["error::RuntimeWarning"]
+
+[tool.ruff]
+line-length = 110

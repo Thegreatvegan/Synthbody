@@ -1,0 +1,379 @@
+{
+ "schema_version": "1.0.0",
+ "dataset_name": "SYNTHBODY human reference physiology (httk-derived)",
+ "provenance": {
+  "extracted_from": "US EPA httk R package, data/Tables.RData objects `tissue.data` and `physiology.data`",
+  "source_repository": "https://github.com/USEPA/CompTox-ExpoCast-httk",
+  "source_license": "GPL-3 (httk R package, US EPA). Underlying data are from the primary literature cited per value.",
+  "software_citation": {
+   "authors": "Pearce RG, Setzer RW, Strope CL, Wambaugh JF, Sipes NS",
+   "year": 2017,
+   "title": "httk: R Package for High-Throughput Toxicokinetics",
+   "journal": "J Stat Softw 79(4):1-26",
+   "pmid": "30220889",
+   "doi": "10.18637/jss.v079.i04"
+  },
+  "extraction_method": "Programmatic read of the binary .RData via pyreadr; values copied verbatim with no manual transcription.",
+  "extraction_date": "2026-10-12",
+  "primary_value_references": {
+   "f_cellular": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "f_interstitial": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "f_water": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "f_lipid_total": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "f_protein": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "f_neutral_lipid_of_lipid": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "f_neutral_phospholipid_of_lipid": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "f_acidic_phospholipid_of_lipid": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "ph": [
+    "Httk estimate, various references needed; Lee 1972",
+    "Pilari et al. 2017; Chow et al. 1982",
+    "Schmitt 2008"
+   ],
+   "density_g_per_cm3": [
+    "Del Nero (2002)",
+    "EPA, Physiological Parameters Database for PBPK Modeling",
+    "Sun and Sethu (2017)"
+   ],
+   "vol_L_per_kg": [
+    "ILSI-RSI 1994"
+   ],
+   "flow_mL_per_min_per_kg075": [
+    "Davies and Morris 1993",
+    "ILSI-RSI 1994"
+   ]
+  },
+  "key_primary_citations": {
+   "tissue_blood_flows": {
+    "citation": "Davies B, Morris T. Physiological parameters in laboratory animals and humans. Pharm Res. 1993;10(7):1093-5.",
+    "pmid": "8378254",
+    "doi": "10.1023/a:1018943613122"
+   },
+   "tissue_volumes": {
+    "citation": "ILSI Risk Science Institute (1994) Physiological Parameter Values for PBPK Models. International Life Sciences Institute, Washington DC.",
+    "pmid": null,
+    "doi": null,
+    "note": "Cited by httk as `ILSI-RSI 1994`. Primary document not independently retrieved by SYNTHBODY; values taken as distributed in httk."
+   },
+   "tissue_composition": {
+    "citation": "Schmitt W. General approach for the calculation of tissue to plasma partition coefficients. Toxicol In Vitro. 2008;22(2):457-67.",
+    "pmid": "17981004",
+    "doi": "10.1016/j.tiv.2007.09.010"
+   },
+   "tissue_density": {
+    "citation": "US EPA Physiological Parameters Database for PBPK Modeling.",
+    "pmid": null,
+    "doi": null
+   }
+  }
+ },
+ "notes": [
+  "`flow_mL_per_min_per_kg075` is allometrically normalised: Q_tissue = value * BW_kg**0.75 mL/min.",
+  "`vol_L_per_kg` is a simple per-kg body-weight fraction (L/kg).",
+  "f_neutral_lipid_of_lipid and f_*_phospholipid_of_lipid are fractions OF the total lipid fraction (f_lipid_total), per the Schmitt 2008 parameterisation used by httk.",
+  "`rest` is a lumped remainder compartment carrying no composition data; it is given water/lipid composition equal to muscle in the SYNTHBODY PBPK model (an explicit modelling assumption, not a measurement)."
+ ],
+ "tissues": {
+  "adipose": {
+   "f_cellular": 0.86,
+   "f_interstitial": 0.14,
+   "f_water": 0.02002,
+   "f_lipid_total": 0.934,
+   "f_protein": 0.04601,
+   "f_neutral_lipid_of_lipid": 0.9361,
+   "f_neutral_phospholipid_of_lipid": 0.05607,
+   "f_acidic_phospholipid_of_lipid": 0.007859,
+   "ph": 7.1,
+   "density_g_per_cm3": 0.916,
+   "vol_L_per_kg": 0.2086,
+   "flow_mL_per_min_per_kg075": 10.74
+  },
+  "bone": {
+   "f_cellular": 0.9,
+   "f_interstitial": 0.1,
+   "f_water": 0.26,
+   "f_lipid_total": 0.02,
+   "f_protein": 0.21,
+   "f_neutral_lipid_of_lipid": 0.85,
+   "f_neutral_phospholipid_of_lipid": 0.11,
+   "f_acidic_phospholipid_of_lipid": 0.04,
+   "ph": 7.0,
+   "density_g_per_cm3": 1.976,
+   "vol_L_per_kg": 0.07231,
+   "flow_mL_per_min_per_kg075": 9.719
+  },
+  "brain": {
+   "f_cellular": 0.995,
+   "f_interstitial": 0.005,
+   "f_water": 0.8043,
+   "f_lipid_total": 0.1123,
+   "f_protein": 0.08341,
+   "f_neutral_lipid_of_lipid": 0.3734,
+   "f_neutral_phospholipid_of_lipid": 0.4588,
+   "f_acidic_phospholipid_of_lipid": 0.1678,
+   "ph": 7.1,
+   "density_g_per_cm3": 1.035,
+   "vol_L_per_kg": 0.01931,
+   "flow_mL_per_min_per_kg075": 28.93
+  },
+  "gut": {
+   "f_cellular": 0.9,
+   "f_interstitial": 0.096,
+   "f_water": 0.78,
+   "f_lipid_total": 0.07,
+   "f_protein": 0.15,
+   "f_neutral_lipid_of_lipid": 0.69,
+   "f_neutral_phospholipid_of_lipid": 0.26,
+   "f_acidic_phospholipid_of_lipid": 0.05,
+   "ph": 7.0,
+   "density_g_per_cm3": 1.044,
+   "vol_L_per_kg": 0.0158,
+   "flow_mL_per_min_per_kg075": 47.52
+  },
+  "heart": {
+   "f_cellular": 0.75,
+   "f_interstitial": 0.25,
+   "f_water": 0.6957,
+   "f_lipid_total": 0.1375,
+   "f_protein": 0.1668,
+   "f_neutral_lipid_of_lipid": 0.8901,
+   "f_neutral_phospholipid_of_lipid": 0.07901,
+   "f_acidic_phospholipid_of_lipid": 0.0309,
+   "ph": 7.1,
+   "density_g_per_cm3": 1.03,
+   "vol_L_per_kg": 0.004563,
+   "flow_mL_per_min_per_kg075": 9.917
+  },
+  "kidney": {
+   "f_cellular": 0.835,
+   "f_interstitial": 0.165,
+   "f_water": 0.7661,
+   "f_lipid_total": 0.06407,
+   "f_protein": 0.1698,
+   "f_neutral_lipid_of_lipid": 0.6375,
+   "f_neutral_phospholipid_of_lipid": 0.294,
+   "f_acidic_phospholipid_of_lipid": 0.06853,
+   "ph": 7.22,
+   "density_g_per_cm3": 1.05,
+   "vol_L_per_kg": 0.00419,
+   "flow_mL_per_min_per_kg075": 51.24
+  },
+  "liver": {
+   "f_cellular": 0.77,
+   "f_interstitial": 0.23,
+   "f_water": 0.7244,
+   "f_lipid_total": 0.09231,
+   "f_protein": 0.1833,
+   "f_neutral_lipid_of_lipid": 0.7244,
+   "f_neutral_phospholipid_of_lipid": 0.2251,
+   "f_acidic_phospholipid_of_lipid": 0.05051,
+   "ph": 7.23,
+   "density_g_per_cm3": 1.05,
+   "vol_L_per_kg": 0.02448,
+   "flow_mL_per_min_per_kg075": 59.92
+  },
+  "lung": {
+   "f_cellular": 0.8,
+   "f_interstitial": 0.2,
+   "f_water": 0.8038,
+   "f_lipid_total": 0.01316,
+   "f_protein": 0.183,
+   "f_neutral_lipid_of_lipid": 0.3,
+   "f_neutral_phospholipid_of_lipid": 0.56,
+   "f_acidic_phospholipid_of_lipid": 0.14,
+   "ph": 6.6,
+   "density_g_per_cm3": 1.05,
+   "vol_L_per_kg": 0.007235,
+   "flow_mL_per_min_per_kg075": 5.785
+  },
+  "muscle": {
+   "f_cellular": 0.85,
+   "f_interstitial": 0.15,
+   "f_water": 0.7991,
+   "f_lipid_total": 0.02387,
+   "f_protein": 0.177,
+   "f_neutral_lipid_of_lipid": 0.5394,
+   "f_neutral_phospholipid_of_lipid": 0.3817,
+   "f_acidic_phospholipid_of_lipid": 0.07884,
+   "ph": 6.81,
+   "density_g_per_cm3": 1.041,
+   "vol_L_per_kg": 0.3842,
+   "flow_mL_per_min_per_kg075": 30.99
+  },
+  "placenta": {
+   "f_cellular": 0.724,
+   "f_interstitial": 0.276,
+   "f_water": 0.793,
+   "f_lipid_total": 0.0083,
+   "f_protein": 0.1535,
+   "f_neutral_lipid_of_lipid": 0.6273,
+   "f_neutral_phospholipid_of_lipid": 0.2987,
+   "f_acidic_phospholipid_of_lipid": 0.0738,
+   "ph": 7.32,
+   "density_g_per_cm3": 1.02
+  },
+  "red blood cells": {
+   "f_cellular": 1.0,
+   "f_interstitial": 0.0,
+   "f_water": 0.6643,
+   "f_lipid_total": 0.00501,
+   "f_protein": 0.3307,
+   "f_neutral_lipid_of_lipid": 0.4,
+   "f_neutral_phospholipid_of_lipid": 0.5,
+   "f_acidic_phospholipid_of_lipid": 0.1,
+   "ph": 7.2,
+   "density_g_per_cm3": 1.08
+  },
+  "skin": {
+   "f_cellular": 0.4,
+   "f_interstitial": 0.6,
+   "f_water": 0.427,
+   "f_lipid_total": 0.2831,
+   "f_protein": 0.2898,
+   "f_neutral_lipid_of_lipid": 0.3599,
+   "f_neutral_phospholipid_of_lipid": 0.5019,
+   "f_acidic_phospholipid_of_lipid": 0.1382,
+   "ph": 7.0,
+   "density_g_per_cm3": 1.117,
+   "vol_L_per_kg": 0.0332,
+   "flow_mL_per_min_per_kg075": 12.4
+  },
+  "spleen": {
+   "f_cellular": 0.745,
+   "f_interstitial": 0.255,
+   "f_water": 0.7699,
+   "f_lipid_total": 0.03946,
+   "f_protein": 0.1907,
+   "f_neutral_lipid_of_lipid": 0.5341,
+   "f_neutral_phospholipid_of_lipid": 0.393,
+   "f_acidic_phospholipid_of_lipid": 0.07287,
+   "ph": 7.0,
+   "density_g_per_cm3": 1.054,
+   "vol_L_per_kg": 0.002467,
+   "flow_mL_per_min_per_kg075": 3.182
+  },
+  "thyroid": {
+   "f_cellular": 0.86,
+   "f_interstitial": 0.14,
+   "f_water": 0.69,
+   "f_lipid_total": 0.05,
+   "f_protein": 0.16,
+   "f_neutral_lipid_of_lipid": 0.92,
+   "f_neutral_phospholipid_of_lipid": 0.064,
+   "f_acidic_phospholipid_of_lipid": 0.014,
+   "ph": 7.3,
+   "density_g_per_cm3": 1.051,
+   "vol_L_per_kg": 0.0003,
+   "flow_mL_per_min_per_kg075": 3.7
+  },
+  "rest": {
+   "vol_L_per_kg": 0.05182,
+   "flow_mL_per_min_per_kg075": 4.19
+  }
+ },
+ "whole_body": {
+  "Total Body Water": {
+   "units": "ml/kg",
+   "human": 600.0
+  },
+  "Plasma Volume": {
+   "units": "ml/kg",
+   "human": 42.86
+  },
+  "Cardiac Output": {
+   "units": "ml/min/kg^(3/4)",
+   "human": 231.4
+  },
+  "Average BW": {
+   "units": "kg",
+   "human": 70.0
+  },
+  "Total Plasma Protein": {
+   "units": "g/ml",
+   "human": 0.074
+  },
+  "Plasma albumin": {
+   "units": "g/ml",
+   "human": 0.0418
+  },
+  "Plasma a-1-AGP": {
+   "units": "g/ml",
+   "human": 0.0018
+  },
+  "Hematocrit": {
+   "units": "fraction",
+   "human": 0.44
+  },
+  "Urine": {
+   "units": "ml/min/kg^(3/4)",
+   "human": 0.04017
+  },
+  "Bile": {
+   "units": "ml/min/kg^(3/4)",
+   "human": 0.01004
+  },
+  "GFR": {
+   "units": "ml/min/kg^(3/4)",
+   "human": 5.165
+  },
+  "Average Body Temperature": {
+   "units": "C",
+   "human": 37.0
+  },
+  "Plasma Effective Neutral Lipid Volume Fraction": {
+   "units": "unitless",
+   "human": 0.0073
+  },
+  "Plasma Protein Volume Fraction": {
+   "units": "unitless",
+   "human": 0.06951
+  },
+  "Pulmonary Ventilation Rate": {
+   "units": "l/h/kg^(3/4)",
+   "human": 27.75
+  },
+  "Alveolar Dead Space Fraction": {
+   "units": "unitless",
+   "human": 0.33
+  },
+  "Small Intestine Mean Residence Time": {
+   "units": "min",
+   "human": 199.2
+  },
+  "Small Intestine Radius": {
+   "units": "cm",
+   "human": 1.75
+  }
+ }
+}

@@ -1,0 +1,540 @@
+{
+  "schema_version": "1.0.0",
+  "curation_note": "Every entry below was resolved against the NCBI PubMed E-utilities API (esearch/esummary) on 2026-10-12, or is a non-PubMed public document whose URL is recorded. PMIDs, DOIs, journals and years are as returned by NCBI, not from recall. Entries whose primary full text SYNTHBODY could not retrieve are flagged in `access_note`.",
+  "references": [
+    {
+      "id": "boeckmann1994",
+      "citation": "Boeckmann AJ, Sheiner LB, Beal SL. NONMEM Users Guide: Part V. NONMEM Project Group, University of California, San Francisco, 1994.",
+      "authors": "Boeckmann AJ; Sheiner LB; Beal SL",
+      "year": 1994,
+      "journal": "NONMEM Project Group (technical documentation)",
+      "pmid": null,
+      "doi": null,
+      "url": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/Theoph.html",
+      "kind": "dataset_source",
+      "topics": [
+        "theophylline",
+        "population pharmacokinetics",
+        "validation dataset"
+      ],
+      "license_note": "The Theoph data frame is distributed in the R `datasets` package under GPL-2 | GPL-3. Redistribution for research use is permitted under those terms. SYNTHBODY ships it unmodified.",
+      "access_note": "Primary NONMEM Users Guide Part V was not retrieved. The dataset itself was obtained programmatically from the Rdatasets CSV mirror of R `datasets::Theoph` and is byte-for-byte as distributed.",
+      "relevance": "Source publication cited by R for the Theoph oral theophylline concentration-time dataset used as SYNTHBODY's primary independent validation data."
+    },
+    {
+      "id": "upton1980",
+      "citation": "Upton RA, Thiercelin JF, Guentert TW, et al. Evaluation of the absorption from 15 commercial theophylline products indicating deficiencies in currently applied bioavailability criteria. J Pharmacokinet Biopharm. 1980;8(3):229-42.",
+      "authors": "Upton RA; Thiercelin JF; Guentert TW",
+      "year": 1980,
+      "journal": "J Pharmacokinet Biopharm",
+      "pmid": "7420268",
+      "doi": "10.1007/BF01059644",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/7420268/",
+      "kind": "primary_study",
+      "topics": [
+        "theophylline",
+        "oral absorption",
+        "bioavailability"
+      ],
+      "license_note": "Copyrighted; cited only. No text or tables reproduced in SYNTHBODY.",
+      "access_note": "Abstract metadata verified via PubMed. Full text not retrieved; no numerical values were taken from this paper.",
+      "relevance": "Dr R. A. Upton is credited as the investigator behind the theophylline study distributed as the Theoph dataset. Recorded for lineage, not used for parameter values."
+    },
+    {
+      "id": "kwan1976",
+      "citation": "Kwan KC, Breault GO, Umbenhauer ER, McMahon FG, Duggan DE. Kinetics of indomethacin absorption, elimination, and enterohepatic circulation in man. J Pharmacokinet Biopharm. 1976;4(3):255-80.",
+      "authors": "Kwan KC; Breault GO; Umbenhauer ER",
+      "year": 1976,
+      "journal": "J Pharmacokinet Biopharm",
+      "pmid": "978392",
+      "doi": "10.1007/BF01063617",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/978392/",
+      "kind": "primary_study",
+      "topics": [
+        "indomethacin",
+        "two-compartment",
+        "enterohepatic recirculation",
+        "validation dataset"
+      ],
+      "license_note": "Copyrighted; cited only. The Indometh data frame itself is distributed in the R `datasets` package under GPL-2 | GPL-3.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved; SYNTHBODY uses only the observed concentrations as distributed in R `datasets::Indometh`, and estimates its own parameters from them.",
+      "relevance": "Source study for the Indometh IV indomethacin dataset used as SYNTHBODY's second independent validation dataset. Note its finding of enterohepatic recirculation, which a plain 2-compartment model does not represent."
+    },
+    {
+      "id": "davies1993",
+      "citation": "Davies B, Morris T. Physiological parameters in laboratory animals and humans. Pharm Res. 1993;10(7):1093-5.",
+      "authors": "Davies B; Morris T",
+      "year": 1993,
+      "journal": "Pharm Res",
+      "pmid": "8378254",
+      "doi": "10.1023/a:1018943613122",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8378254/",
+      "kind": "parameter_compilation",
+      "topics": [
+        "physiology",
+        "PBPK",
+        "organ blood flow"
+      ],
+      "license_note": "Copyrighted; cited only. The numerical values used by SYNTHBODY were obtained from the GPL-3 licensed US EPA httk package, which attributes them to this reference.",
+      "access_note": "Metadata verified via PubMed. Primary table not retrieved directly; values are as redistributed in httk `tissue.data`.",
+      "relevance": "Primary source attributed by httk for human organ blood flows used in the SYNTHBODY PBPK model."
+    },
+    {
+      "id": "ilsi1994",
+      "citation": "ILSI Risk Science Institute. Physiological Parameter Values for PBPK Models. International Life Sciences Institute, Washington DC, 1994.",
+      "authors": "ILSI Risk Science Institute",
+      "year": 1994,
+      "journal": "ILSI Risk Science Institute (monograph)",
+      "pmid": null,
+      "doi": null,
+      "url": null,
+      "kind": "parameter_compilation",
+      "topics": [
+        "physiology",
+        "PBPK",
+        "organ volumes"
+      ],
+      "license_note": "Values used by SYNTHBODY were obtained from the GPL-3 licensed US EPA httk package, which attributes them to this reference.",
+      "access_note": "NOT INDEPENDENTLY RETRIEVED. SYNTHBODY could not locate a public copy of this monograph. Organ volume fractions are used exactly as redistributed in httk `tissue.data` with the attribution httk supplies. Anyone using these values for a regulatory purpose should verify them against the primary document.",
+      "relevance": "Primary source attributed by httk for human organ volume fractions used in the SYNTHBODY PBPK model."
+    },
+    {
+      "id": "schmitt2008",
+      "citation": "Schmitt W. General approach for the calculation of tissue to plasma partition coefficients. Toxicol In Vitro. 2008;22(2):457-67.",
+      "authors": "Schmitt W",
+      "year": 2008,
+      "journal": "Toxicol In Vitro",
+      "pmid": "17981004",
+      "doi": "10.1016/j.tiv.2007.09.010",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/17981004/",
+      "kind": "method",
+      "topics": [
+        "tissue composition",
+        "partition coefficients",
+        "PBPK"
+      ],
+      "license_note": "Copyrighted; cited only. Tissue composition fractions used by SYNTHBODY come from the GPL-3 httk package, which attributes them to this reference.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. SYNTHBODY uses the tissue composition data attributed to Schmitt by httk, but implements the Poulin and Theil partitioning equations, not Schmitt's own equations.",
+      "relevance": "Source of the water / neutral-lipid / phospholipid / protein tissue composition fractions used to predict tissue:plasma partition coefficients."
+    },
+    {
+      "id": "pearce2017",
+      "citation": "Pearce RG, Setzer RW, Strope CL, Wambaugh JF, Sipes NS. httk: R Package for High-Throughput Toxicokinetics. J Stat Softw. 2017;79(4):1-26.",
+      "authors": "Pearce RG; Setzer RW; Strope CL",
+      "year": 2017,
+      "journal": "J Stat Softw",
+      "pmid": "30220889",
+      "doi": "10.18637/jss.v079.i04",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/30220889/",
+      "kind": "software",
+      "topics": [
+        "toxicokinetics",
+        "PBPK",
+        "open source physiology data"
+      ],
+      "license_note": "httk is released by the US EPA under GPL-3. SYNTHBODY redistributes physiological values extracted from it and credits both httk and the per-value primary references httk records.",
+      "access_note": "Open access. Physiological data extracted programmatically from httk/data/Tables.RData (objects `tissue.data`, `physiology.data`) on 2026-10-12.",
+      "relevance": "Immediate, openly licensed provenance for every physiological constant in the SYNTHBODY PBPK model."
+    },
+    {
+      "id": "poulin2002",
+      "citation": "Poulin P, Theil FP. Prediction of pharmacokinetics prior to in vivo studies. II. Generic physiologically based pharmacokinetic models of drug disposition. J Pharm Sci. 2002;91(5):1358-70.",
+      "authors": "Poulin P; Theil FP",
+      "year": 2002,
+      "journal": "J Pharm Sci",
+      "pmid": "11977112",
+      "doi": "10.1002/jps.10128",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/11977112/",
+      "kind": "method",
+      "topics": [
+        "PBPK",
+        "tissue partition coefficients",
+        "volume of distribution"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. The tissue-composition partitioning equations implemented in SYNTHBODY follow the widely reproduced Poulin-Theil formulation; users should confirm against the primary paper before regulatory use.",
+      "relevance": "Method implemented in synthbody.engine.physiology.partition for predicting tissue:plasma partition coefficients from logP, fraction unbound and tissue composition."
+    },
+    {
+      "id": "rodgers2006",
+      "citation": "Rodgers T, Rowland M. Physiologically based pharmacokinetic modelling 2: predicting the tissue distribution of acids, very weak bases, neutrals and zwitterions. J Pharm Sci. 2006;95(6):1238-57.",
+      "authors": "Rodgers T; Rowland M",
+      "year": 2006,
+      "journal": "J Pharm Sci",
+      "pmid": "16639716",
+      "doi": "10.1002/jps.20502",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/16639716/",
+      "kind": "method",
+      "topics": [
+        "PBPK",
+        "tissue partition coefficients",
+        "acids and neutrals"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. Recorded as the method SYNTHBODY does NOT yet implement, and as the recognised improvement over Poulin-Theil for ionisable compounds.",
+      "relevance": "Documents the known limitation of the Poulin-Theil approach that SYNTHBODY currently uses. Listed as a roadmap item."
+    },
+    {
+      "id": "brown1997",
+      "citation": "Brown RP, Delp MD, Lindstedt SL, Rhomberg LR, Beliles RP. Physiological parameter values for physiologically based pharmacokinetic models. Toxicol Ind Health. 1997;13(4):407-84.",
+      "authors": "Brown RP; Delp MD; Lindstedt SL",
+      "year": 1997,
+      "journal": "Toxicol Ind Health",
+      "pmid": "9249929",
+      "doi": "10.1177/074823379701300401",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/9249929/",
+      "kind": "parameter_compilation",
+      "topics": [
+        "physiology",
+        "PBPK",
+        "reference man"
+      ],
+      "license_note": "Copyrighted and paywalled; cited only. No values from this paper are used in SYNTHBODY.",
+      "access_note": "NOT USED FOR VALUES. SYNTHBODY attempted to retrieve the human parameter table and could not access it. Rather than transcribe the table from memory or from secondary summaries, the platform sources its physiology from the openly licensed httk dataset instead. This entry exists so reviewers know the canonical reference and know it was deliberately not relied upon.",
+      "relevance": "The field's canonical physiological parameter compilation, recorded for completeness."
+    },
+    {
+      "id": "mitenko1973",
+      "citation": "Mitenko PA, Ogilvie RI. Rational intravenous doses of theophylline. N Engl J Med. 1973;289(12):600-3.",
+      "authors": "Mitenko PA; Ogilvie RI",
+      "year": 1973,
+      "journal": "N Engl J Med",
+      "pmid": "4723589",
+      "doi": "10.1056/NEJM197309202891202",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/4723589/",
+      "kind": "primary_study",
+      "topics": [
+        "theophylline",
+        "pharmacodynamics",
+        "bronchodilation",
+        "therapeutic range"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. SYNTHBODY does not reproduce its numerical concentration-effect data; the theophylline PD model shipped is parameterised with ILLUSTRATIVE values and labelled as such.",
+      "relevance": "The study historically underpinning the theophylline therapeutic concentration range and its concentration-dependent bronchodilator effect."
+    },
+    {
+      "id": "hendeles1996",
+      "citation": "Hendeles L, Jenkins J, Temple R. Theophylline in asthma. N Engl J Med. 1996;334(21):1380-8.",
+      "authors": "Hendeles L; Jenkins J; Temple R",
+      "year": 1996,
+      "journal": "N Engl J Med",
+      "pmid": "8614425",
+      "doi": "10.1056/NEJM199605233342107",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8614425/",
+      "kind": "review",
+      "topics": [
+        "theophylline",
+        "clinical pharmacology",
+        "therapeutic range"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved.",
+      "relevance": "Clinical review context for theophylline's narrow therapeutic index and the shift toward lower target concentrations."
+    },
+    {
+      "id": "jusko1993_range",
+      "citation": "Hendeles L, Weinberger M, Szefler S, Ellis E. Reassessing the therapeutic range for theophylline: another perspective. Pharmacotherapy. 1993;13(6):594-6.",
+      "authors": "Hendeles L; Weinberger M; Szefler S",
+      "year": 1993,
+      "journal": "Pharmacotherapy",
+      "pmid": "8302684",
+      "doi": null,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8302684/",
+      "kind": "commentary",
+      "topics": [
+        "theophylline",
+        "therapeutic range"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved.",
+      "relevance": "Documents that the theophylline therapeutic range is itself contested, which is why SYNTHBODY displays it as an adjustable reference band rather than a fixed clinical truth."
+    },
+    {
+      "id": "zevin1999_smoking",
+      "citation": "Zevin S, Benowitz NL. Drug interactions with tobacco smoking. An update. Clin Pharmacokinet. 1999;36(6):425-38.",
+      "authors": "Zevin S; Benowitz NL",
+      "year": 1999,
+      "journal": "Clin Pharmacokinet",
+      "pmid": "10427467",
+      "doi": "10.2165/00003088-199936060-00004",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/10427467/",
+      "kind": "review",
+      "topics": [
+        "CYP1A2 induction",
+        "smoking",
+        "theophylline clearance"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. The magnitude of the smoking effect used in SYNTHBODY's covariate model is labelled INFERRED, not measured, because the exact coefficient was not read from this source.",
+      "relevance": "Qualitative basis for SYNTHBODY's smoking covariate on theophylline clearance (CYP1A2 induction increases clearance)."
+    },
+    {
+      "id": "fukuchi2020_cirrhosis",
+      "citation": "Fukuchi H, et al. Differences in Theophylline Clearance Between Patients With Chronic Hepatitis and Those With Liver Cirrhosis. Ther Drug Monit. 2020;42(5):766-771.",
+      "authors": "Fukuchi H",
+      "year": 2020,
+      "journal": "Ther Drug Monit",
+      "pmid": "32657910",
+      "doi": "10.1097/FTD.0000000000000787",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/32657910/",
+      "kind": "primary_study",
+      "topics": [
+        "theophylline",
+        "hepatic impairment",
+        "clearance"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. SYNTHBODY's hepatic-impairment multiplier is labelled ILLUSTRATIVE because no coefficient was extracted from this study.",
+      "relevance": "Evidence that hepatic impairment materially reduces theophylline clearance; motivates the hepatic covariate without supplying its coefficient."
+    },
+    {
+      "id": "anderson2008",
+      "citation": "Anderson BJ, Holford NH. Mechanism-based concepts of size and maturity in pharmacokinetics. Annu Rev Pharmacol Toxicol. 2008;48:303-32.",
+      "authors": "Anderson BJ; Holford NH",
+      "year": 2008,
+      "journal": "Annu Rev Pharmacol Toxicol",
+      "pmid": "17914927",
+      "doi": "10.1146/annurev.pharmtox.48.113006.094708",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/17914927/",
+      "kind": "method",
+      "topics": [
+        "allometric scaling",
+        "body size",
+        "maturation"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. The allometric exponents used (0.75 for clearance, 1.0 for volume) are the standard theory-based values this literature advocates and are labelled DERIVED.",
+      "relevance": "Basis for SYNTHBODY's allometric body-size scaling of clearance and volume in the Virtual Patient Builder."
+    },
+    {
+      "id": "cockcroft1976",
+      "citation": "Cockcroft DW, Gault MH. Prediction of creatinine clearance from serum creatinine. Nephron. 1976;16(1):31-41.",
+      "authors": "Cockcroft DW; Gault MH",
+      "year": 1976,
+      "journal": "Nephron",
+      "pmid": "1244564",
+      "doi": "10.1159/000180580",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/1244564/",
+      "kind": "method",
+      "topics": [
+        "renal function",
+        "creatinine clearance"
+      ],
+      "license_note": "Copyrighted; cited only. The equation itself is a widely reproduced clinical formula.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved.",
+      "relevance": "Implemented in synthbody.engine.physiology.covariates for estimating creatinine clearance from a virtual patient's demographics."
+    },
+    {
+      "id": "inker2021",
+      "citation": "Inker LA, Eneanya ND, Coresh J, et al. New Creatinine- and Cystatin C-Based Equations to Estimate GFR without Race. N Engl J Med. 2021;385(19):1737-1749.",
+      "authors": "Inker LA; Eneanya ND; Coresh J",
+      "year": 2021,
+      "journal": "N Engl J Med",
+      "pmid": "34554658",
+      "doi": "10.1056/NEJMoa2102953",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34554658/",
+      "kind": "method",
+      "topics": [
+        "renal function",
+        "eGFR",
+        "CKD-EPI 2021"
+      ],
+      "license_note": "Copyrighted; cited only. The published equation coefficients are reproduced as a clinical formula.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. The CKD-EPI 2021 creatinine coefficients implemented in SYNTHBODY are the widely republished values; they are labelled LITERATURE_FITTED and should be checked against the primary paper before clinical or regulatory use.",
+      "relevance": "Implemented as the race-free eGFR option in the Virtual Patient Builder, alongside Cockcroft-Gault."
+    },
+    {
+      "id": "dayneka1993",
+      "citation": "Dayneka NL, Garg V, Jusko WJ. Comparison of four basic models of indirect pharmacodynamic responses. J Pharmacokinet Biopharm. 1993;21(4):457-78.",
+      "authors": "Dayneka NL; Garg V; Jusko WJ",
+      "year": 1993,
+      "journal": "J Pharmacokinet Biopharm",
+      "pmid": "8133465",
+      "doi": "10.1007/BF01061691",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8133465/",
+      "kind": "method",
+      "topics": [
+        "pharmacodynamics",
+        "indirect response models",
+        "turnover"
+      ],
+      "license_note": "Copyrighted; cited only. The four model structures are standard and widely reproduced.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved.",
+      "relevance": "The four indirect-response (turnover) model structures implemented in synthbody.engine.models.pd_indirect."
+    },
+    {
+      "id": "sheiner1979",
+      "citation": "Sheiner LB, Stanski DR, Vozeh S, Miller RD, Ham J. Simultaneous modeling of pharmacokinetics and pharmacodynamics: application to d-tubocurarine. Clin Pharmacol Ther. 1979;25(3):358-71.",
+      "authors": "Sheiner LB; Stanski DR; Vozeh S",
+      "year": 1979,
+      "journal": "Clin Pharmacol Ther",
+      "pmid": "761446",
+      "doi": "10.1002/cpt1979253358",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/761446/",
+      "kind": "method",
+      "topics": [
+        "effect compartment",
+        "hysteresis",
+        "PK/PD"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved.",
+      "relevance": "Basis for the effect-compartment (link model) option used to represent delayed pharmacodynamic response."
+    },
+    {
+      "id": "holford1981",
+      "citation": "Holford NH, Sheiner LB. Understanding the dose-effect relationship: clinical application of pharmacokinetic-pharmacodynamic models. Clin Pharmacokinet. 1981;6(6):429-53.",
+      "authors": "Holford NH; Sheiner LB",
+      "year": 1981,
+      "journal": "Clin Pharmacokinet",
+      "pmid": "7032803",
+      "doi": "10.2165/00003088-198106060-00002",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/7032803/",
+      "kind": "review",
+      "topics": [
+        "pharmacodynamics",
+        "Emax model",
+        "sigmoid Emax"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved.",
+      "relevance": "Canonical reference for the Emax and sigmoid-Emax concentration-effect models implemented in synthbody.engine.models.pd_emax."
+    },
+    {
+      "id": "savic2007",
+      "citation": "Savic RM, Jonker DM, Kerbusch T, Karlsson MO. Implementation of a transit compartment model for describing drug absorption in pharmacokinetic studies. J Pharmacokinet Pharmacodyn. 2007;34(5):711-26.",
+      "authors": "Savic RM; Jonker DM; Kerbusch T",
+      "year": 2007,
+      "journal": "J Pharmacokinet Pharmacodyn",
+      "pmid": "17653836",
+      "doi": "10.1007/s10928-007-9066-0",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/17653836/",
+      "kind": "method",
+      "topics": [
+        "absorption",
+        "transit compartments",
+        "lag time"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved.",
+      "relevance": "Reference for the transit-compartment absorption alternative to a single first-order depot. Listed as a roadmap item, not yet implemented."
+    },
+    {
+      "id": "comets2008_npde",
+      "citation": "Comets E, Brendel K, Mentre F. Computing normalised prediction distribution errors to evaluate nonlinear mixed-effect models: the npde add-on package for R. Comput Methods Programs Biomed. 2008;90(2):154-66.",
+      "authors": "Comets E; Brendel K; Mentre F",
+      "year": 2008,
+      "journal": "Comput Methods Programs Biomed",
+      "pmid": "18215437",
+      "doi": "10.1016/j.cmpb.2007.12.002",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/18215437/",
+      "kind": "method",
+      "topics": [
+        "model evaluation",
+        "prediction distribution errors",
+        "visual predictive check"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved. SYNTHBODY implements a simulation-based prediction-interval coverage check, NOT the full NPDE statistic; the distinction is recorded in the validation report.",
+      "relevance": "Reference for the class of simulation-based model evaluation that SYNTHBODY's prediction-interval coverage check approximates."
+    },
+    {
+      "id": "najjar2024_gsa",
+      "citation": "Najjar A, Hamadeh A, Krause S, et al. Global sensitivity analysis of Open Systems Pharmacology Suite physiologically based pharmacokinetic models. CPT Pharmacometrics Syst Pharmacol. 2024;13(1):28-39.",
+      "authors": "Najjar A; Hamadeh A; Krause S",
+      "year": 2024,
+      "journal": "CPT Pharmacometrics Syst Pharmacol",
+      "pmid": "39498820",
+      "doi": "10.1002/psp4.13256",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/39498820/",
+      "kind": "method",
+      "topics": [
+        "global sensitivity analysis",
+        "Sobol",
+        "Morris",
+        "PBPK"
+      ],
+      "license_note": "Open access (CPT:PSP is an open-access journal).",
+      "access_note": "Metadata verified via PubMed.",
+      "relevance": "Precedent for applying Morris screening and Sobol variance decomposition to PBPK models, as SYNTHBODY does in synthbody.engine.analysis.sensitivity."
+    },
+    {
+      "id": "eissing2011_osp",
+      "citation": "Eissing T, Kuepfer L, Becker C, et al. A computational systems biology software platform for multiscale modeling and simulation: integrating whole-body physiology, disease biology, and molecular reaction networks. Front Physiol. 2011;2:4.",
+      "authors": "Eissing T; Kuepfer L; Becker C",
+      "year": 2011,
+      "journal": "Front Physiol",
+      "pmid": "21483730",
+      "doi": "10.3389/fphys.2011.00004",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/21483730/",
+      "kind": "software",
+      "topics": [
+        "PK-Sim",
+        "MoBi",
+        "whole-body PBPK",
+        "Open Systems Pharmacology"
+      ],
+      "license_note": "Open access. PK-Sim/MoBi are released under GPLv2 by the Open Systems Pharmacology community.",
+      "access_note": "Metadata verified via PubMed.",
+      "relevance": "Describes the architecture of PK-Sim/MoBi, the reference open-source platform SYNTHBODY's PBPK structure is modelled on. SYNTHBODY does not reuse their code."
+    },
+    {
+      "id": "obach2008",
+      "citation": "Obach RS, Lombardo F, Waters NJ. Trend analysis of a database of intravenous pharmacokinetic parameters in humans for 670 drug compounds. Drug Metab Dispos. 2008;36(7):1385-405.",
+      "authors": "Obach RS; Lombardo F; Waters NJ",
+      "year": 2008,
+      "journal": "Drug Metab Dispos",
+      "pmid": "18426954",
+      "doi": "10.1124/dmd.108.020479",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/18426954/",
+      "kind": "parameter_compilation",
+      "topics": [
+        "human PK parameters",
+        "clearance",
+        "volume of distribution"
+      ],
+      "license_note": "Copyrighted; cited only.",
+      "access_note": "Metadata verified via PubMed. Full text not retrieved; no values taken.",
+      "relevance": "Recorded as the standard reference compilation a future SYNTHBODY drug library should be populated from, with licensing cleared."
+    },
+    {
+      "id": "pearce_httk_repo",
+      "citation": "US EPA CompTox-ExpoCast httk source repository (data/Tables.RData).",
+      "authors": "US Environmental Protection Agency",
+      "year": 2026,
+      "journal": "GitHub repository",
+      "pmid": null,
+      "doi": null,
+      "url": "https://github.com/USEPA/CompTox-ExpoCast-httk",
+      "kind": "dataset_source",
+      "topics": [
+        "physiology",
+        "open data",
+        "GPL-3"
+      ],
+      "license_note": "GPL-3. Redistribution with attribution is permitted. SYNTHBODY ships derived values in backend/synthbody/data/library/reference_physiology.json with full attribution.",
+      "access_note": "Retrieved and parsed programmatically on 2026-10-12.",
+      "relevance": "The exact artefact from which SYNTHBODY's physiological constants were extracted."
+    },
+    {
+      "id": "pubchem",
+      "citation": "Kim S, Chen J, Cheng T, et al. PubChem 2023 update. Nucleic Acids Res. 2023;51(D1):D1373-D1380. Data retrieved via the PubChem PUG REST API.",
+      "authors": "Kim S; Chen J; Cheng T",
+      "year": 2023,
+      "journal": "Nucleic Acids Res",
+      "pmid": "36305812",
+      "doi": "10.1093/nar/gkac956",
+      "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/",
+      "kind": "dataset_source",
+      "topics": [
+        "chemical identifiers",
+        "molecular properties",
+        "logP"
+      ],
+      "license_note": "PubChem data are placed in the public domain by NCBI and are free to use and redistribute.",
+      "access_note": "Compound identifiers, molecular formulae, molecular weights and XLogP3 values were retrieved programmatically on 2026-10-12. XLogP3 is a COMPUTED descriptor, not an experimental measurement, and is labelled `inferred` wherever SYNTHBODY uses it.",
+      "relevance": "Source of chemical identity and the computed log P estimates used as PBPK inputs."
+    }
+  ]
+}

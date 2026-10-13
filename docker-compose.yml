@@ -1,0 +1,36 @@
+# SYNTHBODY local deployment.
+#
+#   docker compose up --build
+#
+# UI  -> http://localhost:5180
+# API -> http://localhost:8011   (docs at /docs)
+#
+# NOTE: the API is unauthenticated and intended for local research use. Do not
+# expose it to a network without putting authentication in front of it.
+services:
+  backend:
+    build: ./backend
+    container_name: synthbody-api
+    environment:
+      SYNTHBODY_DATABASE_URL: sqlite:////data/synthbody.db
+      SYNTHBODY_LOG_LEVEL: INFO
+      # The nginx container is the only browser-facing origin.
+      SYNTHBODY_CORS_ORIGINS: '["http://localhost:5180","http://127.0.0.1:5180"]'
+    volumes:
+      - synthbody-data:/data
+    ports:
+      - "8011:8011"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: synthbody-ui
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5180:5180"
+    restart: unless-stopped
+
+volumes:
+  synthbody-data:
